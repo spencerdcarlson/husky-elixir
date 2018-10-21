@@ -1,0 +1,17 @@
+#!/bin/env sh
+# husky
+# 0.1.0 unix darwin 
+SCRIPT_PATH=./husky
+HOOK_NAME=`basename "$0"`
+GIT_PARAMS="$*"
+
+if [ "${HUSKY_DEBUG}" = "true" ]; then
+  echo "husky:debug $HOOK_NAME hook started..."
+fi
+
+if [ -f $SCRIPT_PATH ]; then
+  $SCRIPT_PATH $HOOK_NAME "$GIT_PARAMS"
+else
+  echo "Can't find Husky, skipping $HOOK_NAME hook"
+  echo "You can reinstall husky or this hook"
+fi
