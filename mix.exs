@@ -12,8 +12,8 @@ defmodule Husky.MixProject do
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       escript: escript(),
-      source_url: "",
-      homepage_url: ""
+      source_url: "https://github.com/spencerdcarlson/husky-elixir",
+      homepage_url: "https://github.com/spencerdcarlson/husky-elixir"
     ]
   end
 
@@ -21,7 +21,7 @@ defmodule Husky.MixProject do
     [
       licenses: ["MIT"],
       links: %{
-        "GitHub" => "https://github.com",
+        "GitHub" => "https://github.com/spencerdcarlson/husky-elixir",
         "Original NPM package" => "https://github.com/typicode/husky"
       }
     ]
