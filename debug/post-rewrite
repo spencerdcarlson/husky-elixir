@@ -1,6 +1,6 @@
-#!/bin/env sh
+#!/usr/bin/env sh
 # husky
-# 0.1.0 unix darwin 
+# 0.1.1 unix darwin 
 SCRIPT_PATH=./husky
 HOOK_NAME=`basename "$0"`
 GIT_PARAMS="$*"
