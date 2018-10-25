@@ -4,24 +4,22 @@
   @app Mix.Project.config()[:app]
   @version Mix.Project.config()[:version]
   # escript location escript will execute the correct git hook
-  @script_path "./husky"
+  @script_path "deps/#{Mix.Project.config()[:app]}/#{Mix.Project.config()[:escript][:path]}"
 
 
   def run(args) do
     IO.puts("... running husky install")
+    Mix.Task.run("loadconfig", ["./deps/husky/config/config.exs"])
     Mix.shell.info Enum.join(args, " ")
     Application.get_env(:husky, :hook_list)
     |> install_project_hook_scripts(Application.get_env(:husky, :git_hooks_location))
-    Mix.Task.run("escript.build", [])
+#
+#    Mix.Task.run("escript.build") # first need to cd in to package, run mix deps.get
   end
 
   def install_project_hook_scripts(hook_list, install_directory) do
     if not File.dir?(".git") do
-      raise RuntimeError, message: ".git or .git/hooks directory does not exist. HINT: run $ git init"
-    end
-
-    if not File.dir?(".git/hooks") do
-      File.mkdir!(".git/hooks")
+      raise RuntimeError, message: ".git directory does not exist. Try running $ git init"
     end
 
     if not File.dir?(install_directory) do

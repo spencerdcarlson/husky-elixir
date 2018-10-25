@@ -4,7 +4,7 @@ defmodule Husky.MixProject do
   def project do
     [
       app: :husky,
-      version: "0.1.1",
+      version: "0.1.5",
       description:
         "Git hooks made easy. Husky can prevent bad git commit, git push and more 🐶 ❤️ woof! - Elixir equivalent of the husky npm package",
       package: package(),
@@ -20,6 +20,7 @@ defmodule Husky.MixProject do
   defp package() do
     [
       licenses: ["MIT"],
+      files: ~w(CHANGELOG* config LICENSE* README* lib mix.exs priv .formatter.exs),
       links: %{
         "GitHub" => "https://github.com/spencerdcarlson/husky-elixir",
         "Original NPM package" => "https://github.com/typicode/husky"
@@ -27,16 +28,10 @@ defmodule Husky.MixProject do
     ]
   end
 
-  #  # Run "mix help compile.app" to learn about applications.
-  #  def application do
-  #    [
-  #      extra_applications: [:logger]
-  #    ]
-  #  end
-
   defp escript do
     [
-      main_module: Husky
+      main_module: Husky,
+      path: "priv/husky"
     ]
   end
 
@@ -45,8 +40,6 @@ defmodule Husky.MixProject do
     [
       {:poison, "~> 3.1"},
       {:ex_doc, "~> 0.19", only: :dev, runtime: false}
-      # {:dep_from_hexpm, "~> 0.3.0"},
-      # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"},
     ]
   end
 end

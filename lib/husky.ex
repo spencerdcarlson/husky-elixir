@@ -1,10 +1,11 @@
 defmodule Husky do
-  #  use Mix.Task
-  #
-  #  def run(args) do
-  #    IO.puts("install hook")
-  #    Mix.shell.info Enum.join(args, " ")
-  #  end
+#defmodule Mix.Tasks.Husky do
+#    use Mix.Task
+#
+#    def run(argv) do
+#      IO.puts("husky task")
+#      config
+#    end
 
   @moduledoc """
   Documentation for Husky.
@@ -22,7 +23,6 @@ defmodule Husky do
 
   @app Mix.Project.config()[:app]
   @version Mix.Project.config()[:version]
-  @script_path "./husky"
 
   def main(argv \\ []) do
     argv
@@ -52,8 +52,18 @@ defmodule Husky do
       _ ->
         IO.puts("args are not null")
         IO.inspect({opts, word})
+        key = word
+        |> String.replace("-", "_")
+        |> String.to_atom()
 
-        config
+        {cmd, args} =
+        config[key]
+        |> String.split(" ")
+        |> List.pop_at(0)
+
+      {stdout, code} = System.cmd(cmd, args)
+      IO.inspect(stdout)
+      IO.inspect(code)
 
     end
   end
@@ -66,34 +76,18 @@ defmodule Husky do
     # is in .husky.json, then which ever file is last in the sources list will determine the value for pre_commit
 
     # get all config files
-    sources = [
+    # list of tuples { config_exists?, %{configs} }
+    [
       {File.exists?(".husky.json"), parse_json(".husky.json")},
-      {List.first(Application.get_all_env(:husky)) != nil,
-       Application.get_all_env(:husky) |> Map.new()}
+      {not Enum.empty?(Application.get_all_env(:husky)), Application.get_all_env(:husky) |> Map.new()}
     ]
-
-    IO.puts("DEBUG: [{ exist?, %{configs} }]")
-    IO.inspect(sources)
-
-    # filter out only configs that exist
-    list =
-      Enum.reduce(sources, [], fn
-        { true, config_hash }, acc -> [ config_hash | acc ]
-        _, acc -> acc
-      end)
-
-    IO.puts("filter only configs that exist [%{configs}]")
-    IO.inspect(list)
-
-    # convert list of maps into one map
-    result =
-      Enum.reduce(list, %{}, fn
-        map, acc -> Map.merge(acc, map)
+    |> Enum.reduce([], fn # filter out only configs that exist
+      { true, config_hash }, acc -> [ config_hash | acc ]
+      _, acc -> acc
     end)
-
-    IO.puts("merge list of config maps into one config map")
-    IO.inspect(result)
-
+    |> Enum.reduce(%{}, fn # convert list of maps into one map
+      map, acc -> Map.merge(acc, map)
+    end)
   end
 
   def parse_json(file) do
