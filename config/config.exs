@@ -29,5 +29,5 @@ config :husky,
     "post-rewrite",
     "sendemail-validate"
   ],
-  pre_commit: "mix format",
+  pre_commit: "mix credo",
   pre_push: "mix test"
