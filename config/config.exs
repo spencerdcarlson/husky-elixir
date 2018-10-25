@@ -1,5 +1,11 @@
 use Mix.Config
 
+config :logger, backends: [{LoggerFileBackend, :info}]
+
+config :logger, :info,
+  path: "info.log",
+  level: :info
+
 config :husky,
   git_hooks_location: ".git/hooks",
   hook_list: [
