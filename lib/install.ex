@@ -1,4 +1,4 @@
- defmodule Mix.Tasks.Husky.Install do
+defmodule Mix.Tasks.Husky.Install do
   use Mix.Task
 
   @app Mix.Project.config()[:app]
@@ -6,15 +6,16 @@
   # escript location escript will execute the correct git hook
   @script_path "deps/#{Mix.Project.config()[:app]}/#{Mix.Project.config()[:escript][:path]}"
 
-
   def run(args) do
     IO.puts("... running husky install")
     Mix.Task.run("loadconfig", ["./deps/husky/config/config.exs"])
-    Mix.shell.info Enum.join(args, " ")
+    Mix.shell().info(Enum.join(args, " "))
+
     Application.get_env(:husky, :hook_list)
     |> install_project_hook_scripts(Application.get_env(:husky, :git_hooks_location))
-#
-#    Mix.Task.run("escript.build") # first need to cd in to package, run mix deps.get
+
+    #
+    #    Mix.Task.run("escript.build") # first need to cd in to package, run mix deps.get
   end
 
   def install_project_hook_scripts(hook_list, install_directory) do
@@ -29,6 +30,7 @@
     hook_list
     |> Enum.map(fn f ->
       path = Path.join(install_directory, f)
+
       with {:ok, file} <- File.open(path, [:write]) do
         IO.binwrite(file, hook_script_content(@app, @version, @script_path))
         File.chmod(path, 0o755)
@@ -44,7 +46,7 @@
       :os.type()
       |> Tuple.to_list()
       |> Enum.map(&Atom.to_string/1)
-      |> Enum.map(fn(s) -> s <> " " end)
+      |> Enum.map(fn s -> s <> " " end)
     }
 SCRIPT_PATH=#{escript_path}
 HOOK_NAME=`basename \"$0\"`
@@ -62,7 +64,4 @@ else
 fi
 "
   end
-
-
-
- end
+end

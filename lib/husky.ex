@@ -1,11 +1,11 @@
 defmodule Husky do
-#defmodule Mix.Tasks.Husky do
-#    use Mix.Task
-#
-#    def run(argv) do
-#      IO.puts("husky task")
-#      config
-#    end
+  # defmodule Mix.Tasks.Husky do
+  #    use Mix.Task
+  #
+  #    def run(argv) do
+  #      IO.puts("husky task")
+  #      config
+  #    end
 
   @moduledoc """
   Documentation for Husky.
@@ -52,19 +52,26 @@ defmodule Husky do
       _ ->
         IO.puts("args are not null")
         IO.inspect({opts, word})
-        key = word
-        |> String.replace("-", "_")
-        |> String.to_atom()
+
+        key =
+          word
+          |> String.replace("-", "_")
+          |> String.to_atom()
 
         {cmd, args} =
-        config[key]
-        |> String.split(" ")
-        |> List.pop_at(0)
+          config[key]
+          |> String.split(" ")
+          |> List.pop_at(0)
 
-      {stdout, code} = System.cmd(cmd, args)
-      IO.inspect(stdout)
-      IO.inspect(code)
+        IO.puts("cmd")
+        IO.inspect(cmd)
 
+        IO.puts("args")
+        IO.inspect(args)
+
+        {stdout, code} = System.cmd(cmd, args)
+        IO.inspect(stdout)
+        IO.inspect(code)
     end
   end
 
@@ -79,13 +86,16 @@ defmodule Husky do
     # list of tuples { config_exists?, %{configs} }
     [
       {File.exists?(".husky.json"), parse_json(".husky.json")},
-      {not Enum.empty?(Application.get_all_env(:husky)), Application.get_all_env(:husky) |> Map.new()}
+      {not Enum.empty?(Application.get_all_env(:husky)),
+       Application.get_all_env(:husky) |> Map.new()}
     ]
-    |> Enum.reduce([], fn # filter out only configs that exist
-      { true, config_hash }, acc -> [ config_hash | acc ]
+    # filter out only configs that exist
+    |> Enum.reduce([], fn
+      {true, config_hash}, acc -> [config_hash | acc]
       _, acc -> acc
     end)
-    |> Enum.reduce(%{}, fn # convert list of maps into one map
+    # convert list of maps into one map
+    |> Enum.reduce(%{}, fn
       map, acc -> Map.merge(acc, map)
     end)
   end
@@ -98,5 +108,4 @@ defmodule Husky do
       |> Map.new(fn {k, v} -> {String.to_atom(k), v} end)
     end
   end
-
 end
