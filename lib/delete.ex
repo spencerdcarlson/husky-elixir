@@ -1,9 +1,9 @@
 defmodule Mix.Tasks.Husky.Delete do
   use Mix.Task
+  require Logger
 
   def run(args) do
-    IO.puts("... running husky delete")
-    Mix.shell().info(Enum.join(args, " "))
+    Mix.shell().info("... running husky delete")
 
     Application.get_env(:husky, :hook_list)
     |> delete_project_hook_scripts(Application.get_env(:husky, :git_hooks_location))
