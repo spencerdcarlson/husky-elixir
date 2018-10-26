@@ -13,7 +13,7 @@ defmodule Mix.Tasks.Husky.Install do
     Mix.Task.run("loadconfig", ["./deps/husky/config/config.exs"]) # has to be hard coded
 
     Application.get_env(:husky, :hook_list)
-    |> install_project_hook_scripts(Application.get_env(:husky, :husky_config_location))
+    |> install_project_hook_scripts(Application.get_env(:husky, :git_hooks_location))
   end
 
   def install_project_hook_scripts(hook_list, install_directory) do
