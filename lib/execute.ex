@@ -30,10 +30,16 @@ defmodule Mix.Tasks.Husky.Execute do
           Mix.shell().info("'$ #{cmd}' was executed, but failed:")
           Mix.shell().error(out)
         end
+
         System.halt(code)
 
       {:error, :key_not_found, key, map} ->
-        Mix.shell().info("A git hook command for '#{key}' was not found in any config file. If you want to configure a git hook, add:\n\tconfig #{inspect(@app)}, #{inspect(key)} \"mix test\"\nto your config/config.exs file")
+        Mix.shell().info(
+          "A git hook command for '#{key}' was not found in any config file. If you want to configure a git hook, add:\n\tconfig #{
+            inspect(@app)
+          }, #{inspect(key)} \"mix test\"\nto your config/config.exs file"
+        )
+
         Logger.debug("'#{key}' was not found in configs. No System.cmd was executed")
         Logger.debug("config map=#{inspect(map)}")
     end
@@ -66,7 +72,8 @@ defmodule Mix.Tasks.Husky.Execute do
     {cmd, args} =
       String.split(value, " ")
       |> List.pop_at(0)
-      # if value is "mix test --trace" => { mix, ["test", "--trace"] }
+
+    # if value is "mix test --trace" => { mix, ["test", "--trace"] }
 
     {:ok, value, System.cmd(cmd, args, stderr_to_stdout: true)}
   end

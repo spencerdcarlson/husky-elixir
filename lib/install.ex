@@ -26,7 +26,7 @@ defmodule Mix.Tasks.Husky.Install do
     end
 
     hook_list
-    |> Enum.map(fn(hook) ->
+    |> Enum.map(fn hook ->
       path = Path.join(install_directory, hook)
 
       with {:ok, file} <- File.open(path, [:write]) do

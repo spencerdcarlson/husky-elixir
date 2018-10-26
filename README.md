@@ -1,6 +1,12 @@
 # Husky
+> Git hooks made easy
 
-**TODO: Add description**
+## Description
+Husky is an exlir version of the [husky](https://www.npmjs.com/package/husky) npm module.
+
+Husky can prevent bad `git commit`, `git push` and more 🐶 ❤️ _woof!_
+
+
 
 ## Installation
 The [Husky](https://hex.pm/packages/husky) Hex package can be installed 
@@ -26,6 +32,8 @@ config :husky,
     pre_commit: "mix format",
     pre_push: "mix test"
 ```
+View example file [config.example.exs](./priv/config.example.exs) 
+
 ##### Configure Git Hooks Using `.husky.json`:
 ```JSON
 {
@@ -37,8 +45,7 @@ config :husky,
   }
 }
 ```
-
-
+View example file [.husky.example.json](./priv/config.example.exs) 
 
 Documentation can found at [https://hexdocs.pm/husky](https://hexdocs.pm/husky).
 

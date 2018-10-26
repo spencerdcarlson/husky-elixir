@@ -23,7 +23,7 @@ defmodule Husky.MixProject do
       files: ~w(CHANGELOG* config LICENSE* README* lib mix.exs priv .formatter.exs),
       links: %{
         "GitHub" => "https://github.com/spencerdcarlson/husky-elixir",
-        "Original NPM package" => "https://github.com/typicode/husky"
+        "Original NPM Package" => "https://github.com/typicode/husky"
       }
     ]
   end
@@ -35,7 +35,6 @@ defmodule Husky.MixProject do
     ]
   end
 
-  # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
       {:poison, "~> 3.1"},
