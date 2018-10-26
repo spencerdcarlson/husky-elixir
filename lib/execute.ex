@@ -2,16 +2,41 @@ defmodule Mix.Tasks.Husky.Execute do
   use Mix.Task
   require Logger
 
-  def run(argv) do
-    Logger.info("...running husky execute task")
+  @app Mix.Project.config()[:app]
 
-    {result, out, code} =
+  def run(argv) do
+    Logger.debug("...running 'husky.execute' task")
+    Mix.shell().info("...running 'husky.execute' task")
+
+    result =
       argv
       |> parse_args
       |> process_options()
 
-    Logger.debug("stderr and stdout: #{inspect(out)}")
-    Logger.debug("exit code: #{inspect(code)}")
+    case result do
+      {:ok, cmd, {out, code}} ->
+        Logger.debug(
+          "System.cmd executed. cmd='#{cmd}' return_code=#{inspect(code)} stdout_stderr=#{
+            inspect(out)
+          }"
+        )
+
+        if code == 0 do
+          Logger.debug("'$ #{cmd}' was executed successfully:")
+          Mix.shell().info("'$ #{cmd}' was executed successfully:")
+          Mix.shell().info(out)
+        else
+          Logger.debug("$ '#{cmd}' was executed, but failed:")
+          Mix.shell().info("'$ #{cmd}' was executed, but failed:")
+          Mix.shell().error(out)
+        end
+        System.halt(code)
+
+      {:error, :key_not_found, key, map} ->
+        Mix.shell().info("A git hook command for '#{key}' was not found in any config file. If you want to configure a git hook, add:\n\tconfig #{inspect(@app)}, #{inspect(key)} \"mix test\"\nto your config/config.exs file")
+        Logger.debug("'#{key}' was not found in configs. No System.cmd was executed")
+        Logger.debug("config map=#{inspect(map)}")
+    end
   end
 
   defp parse_args(argv) do
@@ -19,34 +44,34 @@ defmodule Mix.Tasks.Husky.Execute do
     {parsed, args, _} =
       argv
       |> OptionParser.parse(
-        switches: [upcase: :boolean, install: :boolean],
-        aliases: [u: :upcase, i: :install]
+        switches: [upcase: :boolean],
+        aliases: [u: :upcase]
       )
 
     {parsed, List.to_string(args)}
   end
 
   defp process_options({_, word}) do
+    # {[], "pre-commit"} # example args
     key =
       word
       |> String.replace("-", "_")
       |> String.to_atom()
 
-    Logger.debug("key: #{inspect(key)}")
-    with {:ok, value} <- config(key),
-          list <- String.split(value, " "),
-         {cmd, args} <- List.pop_at(list, 0) do
-      Logger.debug("execute '#{inspect(cmd)}' with args '#{inspect(args)}'")
-      {:ok, System.cmd(cmd, args, stderr_to_stdout: true)}
-    else
-      {:error, map} ->
-      Logger.debug("error looking up '#{key}' in configs: #{inspect(map)}")
-      {:error, "", ""}
-
-    end
-
-
+    Logger.debug("git hook key converted to an atom: #{inspect(key)}")
+    execute_cmd(config(key))
   end
+
+  defp execute_cmd({:ok, value}) do
+    {cmd, args} =
+      String.split(value, " ")
+      |> List.pop_at(0)
+      # if value is "mix test --trace" => { mix, ["test", "--trace"] }
+
+    {:ok, value, System.cmd(cmd, args, stderr_to_stdout: true)}
+  end
+
+  defp execute_cmd({:error, details, key, map}), do: {:error, details, key, map}
 
   def config(key) do
     # source list order determines value precedence.
@@ -81,12 +106,11 @@ defmodule Mix.Tasks.Husky.Execute do
       end)
 
     Logger.debug("final flattened map: #{inspect(map)}")
-    map
 
     if Map.has_key?(map, key) do
       {:ok, map[key]}
     else
-      {:error, map}
+      {:error, :key_not_found, key, map}
     end
   end
 

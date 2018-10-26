@@ -1,10 +1,16 @@
 use Mix.Config
 
-config :logger, backends: [{LoggerFileBackend, :info}]
+# config :logger, backends: [{LoggerFileBackend, :error}]
+##
+## config :logger, :error,
+##  path: "info.log",
+##  level: :error
 
-config :logger, :info,
-  path: "info.log",
-  level: :info
+config :logger,
+  backends: [:console],
+  compile_time_purge_matching: [
+    [level_lower_than: :info]
+  ]
 
 config :husky,
   git_hooks_location: ".git/hooks",
@@ -29,5 +35,6 @@ config :husky,
     "post-rewrite",
     "sendemail-validate"
   ],
-  pre_commit: "mix credo",
+  husky_config_location: "./deps/husky/config/config.exs",
+  pre_commit: "mix test",
   pre_push: "mix test"

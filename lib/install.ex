@@ -1,5 +1,6 @@
 defmodule Mix.Tasks.Husky.Install do
   use Mix.Task
+  require Logger
 
   @app Mix.Project.config()[:app]
   @version Mix.Project.config()[:version]
@@ -7,15 +8,12 @@ defmodule Mix.Tasks.Husky.Install do
   @script_path "deps/#{Mix.Project.config()[:app]}/#{Mix.Project.config()[:escript][:path]}"
 
   def run(args) do
-    IO.puts("... running husky install")
-    Mix.Task.run("loadconfig", ["./deps/husky/config/config.exs"])
-    Mix.shell().info(Enum.join(args, " "))
+    Mix.shell().info("... running 'husky.install' task")
+    Logger.debug("args=#{args}")
+    Mix.Task.run("loadconfig", [Application.get_env(:husky, :git_hooks_location)])
 
     Application.get_env(:husky, :hook_list)
-    |> install_project_hook_scripts(Application.get_env(:husky, :git_hooks_location))
-
-    #
-    #    Mix.Task.run("escript.build") # first need to cd in to package, run mix deps.get
+    |> install_project_hook_scripts(Application.get_env(:husky, :husky_config_location))
   end
 
   def install_project_hook_scripts(hook_list, install_directory) do
@@ -28,8 +26,8 @@ defmodule Mix.Tasks.Husky.Install do
     end
 
     hook_list
-    |> Enum.map(fn f ->
-      path = Path.join(install_directory, f)
+    |> Enum.map(fn(hook) ->
+      path = Path.join(install_directory, hook)
 
       with {:ok, file} <- File.open(path, [:write]) do
         IO.binwrite(file, hook_script_content(@app, @version, @script_path))
