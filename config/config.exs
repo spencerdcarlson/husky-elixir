@@ -6,13 +6,8 @@ use Mix.Config
 ##  path: "info.log",
 ##  level: :error
 
-config :logger,
-  backends: [:console],
-  compile_time_purge_matching: [
-    [level_lower_than: :info]
-  ]
-
 config :husky,
+  git_root_location: ".git",
   git_hooks_location: ".git/hooks",
   hook_list: [
     "applypatch-msg",
@@ -35,6 +30,6 @@ config :husky,
     "post-rewrite",
     "sendemail-validate"
   ],
-  husky_config_location: "./deps/husky/config/config.exs",
-  pre_commit: "mix test",
-  pre_push: "mix test"
+  husky_config_location: "./deps/husky/config/config.exs"
+
+import_config "#{Mix.env()}.exs"

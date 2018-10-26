@@ -23,6 +23,7 @@ end
 * Run `mix husky.install` to install husky git hook scripts
 * Configure git hook commands in either your `config/config.exs` or a `.husky.json` file
     * *Note: `config/config.exs` will take precedence over `.husky.json` if there are key conflicts*
+* Remove git hook scripts `mix husky.delete`
 
 
 ##### Configure Git Hooks Using `config/config.exs`:

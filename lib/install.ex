@@ -10,14 +10,16 @@ defmodule Mix.Tasks.Husky.Install do
   def run(args) do
     Mix.shell().info("... running 'husky.install' task")
     Logger.debug("args=#{args}")
-    Mix.Task.run("loadconfig", ["./deps/husky/config/config.exs"]) # has to be hard coded
+
+    # has to be hard coded
+    if Mix.env() != :test, do: Mix.Task.run("loadconfig", ["./deps/husky/config/config.exs"])
 
     Application.get_env(:husky, :hook_list)
     |> install_project_hook_scripts(Application.get_env(:husky, :git_hooks_location))
   end
 
   def install_project_hook_scripts(hook_list, install_directory) do
-    if not File.dir?(".git") do
+    if not File.dir?(Application.get_env(:husky, :git_root_location)) do
       raise RuntimeError, message: ".git directory does not exist. Try running $ git init"
     end
 
@@ -30,7 +32,10 @@ defmodule Mix.Tasks.Husky.Install do
       path = Path.join(install_directory, hook)
 
       with {:ok, file} <- File.open(path, [:write]) do
-        IO.binwrite(file, hook_script_content(@app, @version, @script_path))
+        script_path =
+          if Mix.env() == :test, do: Application.get_env(:husky, :script_path), else: @script_path
+
+        IO.binwrite(file, hook_script_content(@app, @version, script_path))
         File.chmod(path, 0o755)
         File.close(file)
       end
@@ -46,7 +51,7 @@ defmodule Mix.Tasks.Husky.Install do
       |> Enum.map(&Atom.to_string/1)
       |> Enum.map(fn s -> s <> " " end)
     }
-SCRIPT_PATH=#{escript_path}
+SCRIPT_PATH=\"#{escript_path}\"
 HOOK_NAME=`basename \"$0\"`
 GIT_PARAMS=\"$*\"
 
