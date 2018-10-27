@@ -49,8 +49,8 @@ View example file [config.example.exs](./priv/config.example.exs)
 View example file [.husky.example.json](./priv/config.example.exs) 
 
 With the above setup:
-* `git commit` will execute `mix format`
-* `git push` will execute `mix test` and only push if tests pass
+* `git commit` will execute `mix format`, and only commit if format succeeds
+* `git push` will execute `mix test`, and only push if tests succeed
 * `git commit --no-verify` still commit even if `mix format` fails
 
 Documentation can found at [https://hexdocs.pm/husky](https://hexdocs.pm/husky).
