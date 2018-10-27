@@ -8,7 +8,8 @@ defmodule Mix.Tasks.Husky.Install do
   @script_path "deps/#{Mix.Project.config()[:app]}/#{Mix.Project.config()[:escript][:path]}"
 
   def run(args) do
-    Enum.empty?(args) # suppress warning: variable "args" is unused
+    # suppress warning: variable "args" is unused
+    Enum.empty?(args)
     Mix.shell().info("... running 'husky.install' task")
     # has to be hard coded
     if Mix.env() != :test, do: Mix.Task.run("loadconfig", ["./deps/husky/config/config.exs"])

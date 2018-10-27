@@ -7,8 +7,6 @@ The escript invokes the [husky.execute](../lib/execute.ex) mix task. `husky.exec
 If the command executed returns a successful exit code (`0`) then the git command wil also be executed, otherwise it will fail. 
 
 
-
-
 * **Build** - `rm priv/husky && MIX_ENV=prod mix escript.build`
 * **Publish** - `mix hex.publish`
 * **Install** 
@@ -20,3 +18,6 @@ If the command executed returns a successful exit code (`0`) then the git comman
     * execute git hooks manually via escript - `MIX_ENV=test ./priv/husky pre_commit`
     * execute from git in sandbox - `cd dev/sandbox/.git/hooks && ./pre-commit`
         * *Note: The mix task `husky.execute` will not be available from there*
+        
+### Helpful Resources
+* [githooks documentation](https://git-scm.com/docs/githooks)
