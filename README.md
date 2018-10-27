@@ -50,3 +50,7 @@ View example file [.husky.example.json](./priv/config.example.exs)
 
 Documentation can found at [https://hexdocs.pm/husky](https://hexdocs.pm/husky).
 
+## Contributing
+See the development [README.md](./dev/README.md)
+
+

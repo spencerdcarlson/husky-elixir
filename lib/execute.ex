@@ -5,9 +5,7 @@ defmodule Mix.Tasks.Husky.Execute do
   @app Mix.Project.config()[:app]
 
   def run(argv) do
-    Logger.debug("...running 'husky.execute' task")
-    Mix.shell().info("...running 'husky.execute' task")
-
+    #    Logger.debug("...running 'husky.execute' task") # TODO figure out how to supress logs when running as a dep
     result =
       argv
       |> parse_args
@@ -15,33 +13,24 @@ defmodule Mix.Tasks.Husky.Execute do
 
     case result do
       {:ok, cmd, {out, code}} ->
-        Logger.debug(
-          "System.cmd executed. cmd='#{cmd}' return_code=#{inspect(code)} stdout_stderr=#{
-            inspect(out)
-          }"
-        )
-
         if code == 0 do
-          Logger.debug("'$ #{cmd}' was executed successfully:")
-          Mix.shell().info("'$ #{cmd}' was executed successfully:")
-          Mix.shell().info(out)
+          IO.puts("'$ #{cmd}' was executed successfully:")
+          IO.puts(out)
         else
-          Logger.debug("$ '#{cmd}' was executed, but failed:")
-          Mix.shell().info("'$ #{cmd}' was executed, but failed:")
-          Mix.shell().error(out)
+          IO.puts("'$ #{cmd}' was executed, but failed:")
+          # Maybe print out which git command won't be executed. (i.e. '$ git commit' failed)
+          IO.puts(out)
         end
 
+        # pass on the same exit code as the attempted command
         System.halt(code)
 
-      {:error, :key_not_found, key, map} ->
-        Mix.shell().info(
+      {:error, :key_not_found, key, _} ->
+        IO.puts(
           "A git hook command for '#{key}' was not found in any config file. If you want to configure a git hook, add:\n\tconfig #{
             inspect(@app)
           }, #{inspect(key)} \"mix test\"\nto your config/config.exs file"
         )
-
-        Logger.debug("'#{key}' was not found in configs. No System.cmd was executed")
-        Logger.debug("config map=#{inspect(map)}")
     end
   end
 
@@ -64,7 +53,6 @@ defmodule Mix.Tasks.Husky.Execute do
       |> String.replace("-", "_")
       |> String.to_atom()
 
-    Logger.debug("git hook key converted to an atom: #{inspect(key)}")
     execute_cmd(config(key))
   end
 
@@ -81,7 +69,7 @@ defmodule Mix.Tasks.Husky.Execute do
   defp execute_cmd({:error, details, key, map}), do: {:error, details, key, map}
 
   def config(key) do
-    # source list order determines value precedence.
+    # source list order determines value precedence. - See Map.merge/2
     # If there are conflicting keys in multiple configuration files last item in the source list will take precedence.
     # if config :husky, pre_commit: "mix format" exists in config/config.exs and
     # { "husky": { "hooks": { "pre_commit": "npm test" } } }
@@ -89,30 +77,19 @@ defmodule Mix.Tasks.Husky.Execute do
 
     # get all config files
     # list of tuples { config_exists?, %{configs} }
-    sources = [
-      {File.exists?(".husky.json"), parse_json(".husky.json")},
-      {not Enum.empty?(Application.get_all_env(:husky)),
-       Application.get_all_env(:husky) |> Map.new()}
-    ]
-
-    Logger.debug("sources: #{inspect(sources)}")
-
-    # filter out only configs that exist
-    configs =
-      Enum.reduce(sources, [], fn
+    map =
+      [
+        {File.exists?(".husky.json"), parse_json(".husky.json")},
+        {not Enum.empty?(Application.get_all_env(:husky)),
+         Application.get_all_env(:husky) |> Map.new()}
+      ]
+      # filter out only configs that exist
+      |> Enum.reduce([], fn
         {true, config_hash}, acc -> [config_hash | acc]
         _, acc -> acc
       end)
-
-    Logger.debug("existing config maps:  #{inspect(configs)}")
-
-    # convert list of maps into one map
-    map =
-      Enum.reduce(configs, %{}, fn
-        map, acc -> Map.merge(acc, map)
-      end)
-
-    Logger.debug("final flattened map: #{inspect(map)}")
+      # convert list of maps into one map
+      |> Enum.reduce(%{}, fn map, acc -> Map.merge(acc, map) end)
 
     if Map.has_key?(map, key) do
       {:ok, map[key]}
@@ -125,6 +102,7 @@ defmodule Mix.Tasks.Husky.Execute do
     with {:ok, body} <- File.read(file),
          {:ok, json} <- Poison.decode(body) do
       # maybe add error handling for badly formatted JSON
+      # nil will throw a Protocol.UndefinedError
       json["husky"]["hooks"]
       |> Map.new(fn {k, v} -> {String.to_atom(k), v} end)
     end

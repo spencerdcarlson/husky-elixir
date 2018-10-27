@@ -8,9 +8,8 @@ defmodule Mix.Tasks.Husky.Install do
   @script_path "deps/#{Mix.Project.config()[:app]}/#{Mix.Project.config()[:escript][:path]}"
 
   def run(args) do
+    Enum.empty?(args) # suppress warning: variable "args" is unused
     Mix.shell().info("... running 'husky.install' task")
-    Logger.debug("args=#{args}")
-
     # has to be hard coded
     if Mix.env() != :test, do: Mix.Task.run("loadconfig", ["./deps/husky/config/config.exs"])
 
@@ -23,9 +22,7 @@ defmodule Mix.Tasks.Husky.Install do
       raise RuntimeError, message: ".git directory does not exist. Try running $ git init"
     end
 
-    if not File.dir?(install_directory) do
-      File.mkdir!(install_directory)
-    end
+    if not File.dir?(install_directory), do: File.mkdir!(install_directory)
 
     hook_list
     |> Enum.map(fn hook ->
@@ -62,8 +59,8 @@ fi
 if [ -f $SCRIPT_PATH ]; then
   $SCRIPT_PATH $HOOK_NAME \"$GIT_PARAMS\"
 else
-  echo \"Can't find Husky, skipping $HOOK_NAME hook\"
-  echo \"You can reinstall husky or this hook\"
+  echo \"Can not find Husky escript. Skipping $HOOK_NAME hook\"
+  echo \"You can reinstall husky by running mix husky.install\"
 fi
 "
   end
