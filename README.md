@@ -2,7 +2,7 @@
 > Git hooks made easy
 
 ## Description
-Husky is an exlir version of the [husky](https://www.npmjs.com/package/husky) npm module.
+Husky is an elixir version of the [husky](https://www.npmjs.com/package/husky) npm module.
 
 Husky can prevent bad `git commit`, `git push` and more 🐶 ❤️ _woof!_
 
