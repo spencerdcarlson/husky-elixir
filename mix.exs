@@ -38,7 +38,7 @@ defmodule Husky.MixProject do
   defp deps do
     [
       {:poison, "~> 4.0.1"},
-      {:ex_doc, "~> 0.19", only: :test, runtime: false}
+      {:ex_doc, "~> 0.19", only: :dev, runtime: false}
     ]
   end
 end
