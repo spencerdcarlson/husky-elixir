@@ -6,8 +6,7 @@ config :logger, :console,
   ]
 
 config :husky,
-  git_root_location: "dev/sandbox/.git",
-  git_hooks_location: "dev/sandbox/.git/hooks",
-  script_path: "../../../../priv/husky",
-  pre_commit: "mix test",
-  pre_push: "mix credo"
+  path_to_consumer: "./dev/sandbox",
+  escript_path: "./priv/husky",
+  pre_commit: "mix format",
+  pre_push: "mix test"

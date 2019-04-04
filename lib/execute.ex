@@ -1,8 +1,8 @@
 defmodule Mix.Tasks.Husky.Execute do
   use Mix.Task
   require Logger
-
-  @app Mix.Project.config()[:app]
+  require Husky.Util
+  alias Husky.Util
 
   def run(argv) do
     #    Logger.debug("...running 'husky.execute' task") # TODO figure out how to supress logs when running as a dep
@@ -28,7 +28,7 @@ defmodule Mix.Tasks.Husky.Execute do
       {:error, :key_not_found, key, _} ->
         IO.puts(
           "A git hook command for '#{key}' was not found in any config file. If you want to configure a git hook, add:\n\tconfig #{
-            inspect(@app)
+            inspect(Util.app())
           }, #{inspect(key)} \"mix test\"\nto your config/config.exs file"
         )
     end
@@ -80,12 +80,12 @@ defmodule Mix.Tasks.Husky.Execute do
     config_map =
       [
         {File.exists?(".husky.json"), parse_json(".husky.json")},
-        {not Enum.empty?(Application.get_all_env(:husky)), Map.new(Application.get_all_env(:husky))}
+        {not Enum.empty?(Application.get_all_env(:husky)),
+         Map.new(Application.get_all_env(:husky))}
       ]
-      |> Stream.filter(& elem(&1,0))
-      |> Stream.map(& elem(&1, 1))
+      |> Stream.filter(&elem(&1, 0))
+      |> Stream.map(&elem(&1, 1))
       |> Enum.reduce(%{}, &Map.merge(&2, &1))
-
 
     if Map.has_key?(config_map, key) do
       {:ok, config_map[key]}
