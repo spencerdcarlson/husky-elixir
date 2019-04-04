@@ -1,11 +1,9 @@
 defmodule Mix.Tasks.Husky.Execute do
   use Mix.Task
   require Logger
-  require Husky.Util
-  alias Husky.Util
 
   def run(argv) do
-    #    Logger.debug("...running 'husky.execute' task") # TODO figure out how to supress logs when running as a dep
+    #    Logger.debug("...running 'husky.execute' task") # TODO figure out how to suppress logs when running as a dep
     result =
       argv
       |> parse_args
@@ -25,12 +23,13 @@ defmodule Mix.Tasks.Husky.Execute do
         # pass on the same exit code as the attempted command
         System.halt(code)
 
-      {:error, :key_not_found, key, _} ->
-        IO.puts(
-          "A git hook command for '#{key}' was not found in any config file. If you want to configure a git hook, add:\n\tconfig #{
-            inspect(Util.app())
-          }, #{inspect(key)} \"mix test\"\nto your config/config.exs file"
-        )
+      {:error, :key_not_found, _key, _} ->
+        #        IO.puts(
+        #          "A git hook command for '#{key}' was not found in any config file. If you want to configure a git hook, add:\n\tconfig #{
+        #            inspect(Util.app())
+        #          }, #{inspect(Atom.to_string(key) <> ":")} \"mix format\"\nto your config/config.exs file"
+        #        )
+        :ok
     end
   end
 
