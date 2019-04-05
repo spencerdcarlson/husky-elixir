@@ -1,15 +1,29 @@
 defmodule Mix.Tasks.Husky.Install do
+  @moduledoc """
+  Mix task to install all git-hook scripts.
+  """
+
   use Mix.Task
-  require Logger
   require Husky.Util
   alias Husky.{Script, Util}
 
   @after_compile __MODULE__
+  @doc """
+  Install all scripts to `Husky.Util.git_hooks_directory/0` after compile.
 
+  ## Examples
+  `mix compile`
+  """
   def __after_compile__(_env, _bytecode) do
     run()
   end
 
+  @doc """
+  mix task to install git-hook scripts
+
+  ## Examples
+  `mix husky.install`
+  """
   def run(_args \\ nil) do
     Mix.Task.run("loadconfig", [Util.config_path()])
     Mix.shell().info("... running 'husky.install' task")
@@ -17,8 +31,6 @@ defmodule Mix.Tasks.Husky.Install do
   end
 
   defp create_scripts(hooks, dir) do
-    Logger.debug("hooks directory: #{inspect(dir)}")
-
     unless File.dir?(Path.dirname(dir)),
       do: raise(RuntimeError, message: ".git directory does not exist. Try running $ git init")
 
