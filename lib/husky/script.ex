@@ -1,6 +1,6 @@
 defmodule Husky.Script do
   @moduledoc """
-  Struct to represent a git hook script
+  Struct to represent a [git hook script](https://git-scm.com/docs/githooks)
   """
   require Husky.Util
   alias Husky.Util

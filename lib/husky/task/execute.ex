@@ -1,35 +1,59 @@
 defmodule Mix.Tasks.Husky.Execute do
-  use Mix.Task
-  require Logger
+  @moduledoc """
+  Mix task to invoke a system command set by a husky config file
 
+  ## Examples
+  With the given config file:
+  ```elixir
+  config :husky, pre_commit: "mix format"
+  ```
+
+  ```bash
+  mix husky.execute pre-commit
+  ```
+  Would execute `mix format`
+  """
+
+  use Mix.Task
+
+  @doc """
+  mix task to execute husky config commands.
+
+  ## Examples
+  `mix husky.execute pre-commit`
+  """
   def run(argv) do
-    #    Logger.debug("...running 'husky.execute' task") # TODO figure out how to suppress logs when running as a dep
     result =
       argv
       |> parse_args
       |> process_options()
 
     case result do
-      {:ok, cmd, {out, code}} ->
-        if code == 0 do
-          IO.puts("'$ #{cmd}' was executed successfully:")
-          IO.puts(out)
-        else
-          IO.puts("'$ #{cmd}' was executed, but failed:")
-          # Maybe print out which git command won't be executed. (i.e. '$ git commit' failed)
-          IO.puts(out)
-        end
+      {:ok, cmd, {out, 0}} ->
+        """
+        '$ #{cmd}' was executed successfully:
+        #{out}
+        """
+        |> IO.puts()
 
-        # pass on the same exit code as the attempted command
+        System.halt()
+
+      {:ok, cmd, {out, code}} ->
+        """
+        '$ #{cmd}' was executed, but failed:
+        #{out}
+        """
+        |> IO.puts()
+
         System.halt(code)
 
       {:error, :key_not_found, _key, _} ->
+        System.halt()
         #        IO.puts(
         #          "A git hook command for '#{key}' was not found in any config file. If you want to configure a git hook, add:\n\tconfig #{
         #            inspect(Util.app())
         #          }, #{inspect(Atom.to_string(key) <> ":")} \"mix format\"\nto your config/config.exs file"
         #        )
-        :ok
     end
   end
 
@@ -47,12 +71,11 @@ defmodule Mix.Tasks.Husky.Execute do
 
   defp process_options({_, word}) do
     # {[], "pre-commit"} # example args
-    key =
-      word
-      |> String.replace("-", "_")
-      |> String.to_atom()
-
-    execute_cmd(config(key))
+    word
+    |> String.replace("-", "_")
+    |> String.to_atom()
+    |> config()
+    |> execute_cmd()
   end
 
   defp execute_cmd({:ok, value}) do
@@ -67,7 +90,7 @@ defmodule Mix.Tasks.Husky.Execute do
 
   defp execute_cmd({:error, details, key, map}), do: {:error, details, key, map}
 
-  def config(key) do
+  defp config(key) do
     # source list order determines value precedence. - See Map.merge/2
     # If there are conflicting keys in multiple configuration files last item in the source list will take precedence.
     # if config :husky, pre_commit: "mix format" exists in config/config.exs and
@@ -93,7 +116,7 @@ defmodule Mix.Tasks.Husky.Execute do
     end
   end
 
-  def parse_json(file) do
+  defp parse_json(file) do
     with {:ok, body} <- File.read(file),
          {:ok, json} <- Poison.decode(body) do
       # maybe add error handling for badly formatted JSON

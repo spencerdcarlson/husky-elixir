@@ -1,9 +1,9 @@
 ## Development
 
 ## Overview
-The [husky.install](../lib/install.ex) mix task will generate a and install a default bash script in the `.git/hooks` directory
-for every possible git hook (see `hooks` in [Husky.Util](../lib/util.ex)) These husky hook scripts will invoke the [escript](../lib/escript.ex) that gets packaged in `priv/husky`. 
-The escript invokes the [husky.execute](../lib/execute.ex) mix task. `husky.execute` parses config files and executes the user specified commands. `husky.execute` returns the same exit code as the command executed. 
+The [husky.install](../lib/husky/task/install.ex) mix task will generate a and install a default bash script in the `.git/hooks` directory
+for every possible git hook (see `hooks` in [Husky.Util](../lib/husky/util/util.ex)) These husky hook scripts will invoke the [escript](../lib/escript.ex) that gets packaged in `priv/husky`. 
+The escript invokes the [husky.execute](../lib/husky/task/execute.ex) mix task. `husky.execute` parses config files and executes the user specified commands. `husky.execute` returns the same exit code as the command executed. 
 If the command executed returns a successful exit code (`0`) then the git command wil also be executed, otherwise it will fail.
 
 ### Flow of Execution
