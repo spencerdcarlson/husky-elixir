@@ -14,7 +14,7 @@ by adding `husky` to your list of dependencies in `mix.exs`:
 ```elixir
 defp deps do
   [
-    {:husky, "~> 0.2"}
+    {:husky, "~> 1.0", only: :dev, runtime: false}
   ]
 end
 ```
