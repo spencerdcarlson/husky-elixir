@@ -27,8 +27,8 @@ defmodule Mix.Tasks.Husky.Execute do
   def run(argv) do
     command =
       argv
-      |> parse_args
-      |> fetch_command
+      |> parse_args()
+      |> fetch_command()
 
     case command do
       {:error, :no_cmd} ->
@@ -37,30 +37,34 @@ defmodule Mix.Tasks.Husky.Execute do
       {:ok, {hook, cmd}} ->
         running_message()
 
-        case execute_cmd(cmd) do
-          {0, out} ->
-            """
-            #{out}
-            #{green()}
-            husky > #{hook} ('#{cmd}')
-            #{reset()}
-            """
-            |> IO.puts()
-
-            System.halt()
-
-          {code, out} ->
-               """
-               #{out}
-               #{red()}
-               husky > #{hook} ('#{cmd}') failed #{no_verify_message(hook)}
-               #{reset()}
-               """
-            |> IO.puts()
-
-            System.halt(code)
-        end
+        cmd
+        |> execute_cmd()
+        |> handle_result(%{hook: hook, cmd: cmd})
     end
+  end
+
+  defp handle_result({0, out}, %{hook: hook, cmd: cmd}) do
+    """
+    #{out}
+    #{green()}
+    husky > #{hook} ('#{cmd}')
+    #{reset()}
+    """
+    |> IO.puts()
+
+    System.halt()
+  end
+
+  defp handle_result({code, out}, %{hook: hook, cmd: cmd}) do
+    """
+    #{out}
+    #{red()}
+    husky > #{hook} ('#{cmd}') failed #{no_verify_message(hook)}
+    #{reset()}
+    """
+    |> IO.puts()
+
+    System.halt(code)
   end
 
   defp no_verify_message(hook) do
@@ -98,37 +102,30 @@ defmodule Mix.Tasks.Husky.Execute do
 
   defp fetch_command({_, word}) do
     # {[], "pre-commit"} # example args
-    IO.inspect(word, label: "parsed options (word)")
-
     command =
       word
-      |> String.replace("-", "_")
-      |> String.to_atom()
-      |> config
+      |> normalize()
+      |> config()
 
     case command do
       {:ok, cmd} -> {:ok, {word, cmd}}
-      {:error, :config} -> {:ok, :no_cmd}
+      {:error, :config} -> {:error, :no_cmd}
     end
   end
 
   defp execute_cmd(cmd) do
     result =
-    "#{cmd}; echo $?"
-    |> to_char_list()
-    |> :os.cmd()
-    |> to_string()
+      "#{cmd}; echo $?"
+      |> to_charlist()
+      |> :os.cmd()
+      |> to_string()
 
-    {code, out} = result |> String.split("\n") |> List.pop_at(-2)
+    {code, out} =
+      result
+      |> String.split("\n")
+      |> List.pop_at(-2)
+
     {String.to_integer(code), Enum.join(out, "\n")}
-
-#    {cmd, args} =
-#      String.split(cmd, " ")
-#      |> List.pop_at(0)
-#
-#    # if cmd is "mix test --trace" => { mix, ["test", "--trace"] }
-#
-#    {:ok, cmd, System.cmd(cmd, args, stderr_to_stdout: true)}
   end
 
   defp config(key) do
@@ -154,12 +151,35 @@ defmodule Mix.Tasks.Husky.Execute do
   end
 
   defp parse_json(file) do
-    with {:ok, body} <- File.read(file),
-         {:ok, json} <- Poison.decode(body) do
-      # maybe add error handling for badly formatted JSON
-      # nil will throw a Protocol.UndefinedError
-      json["husky"]["hooks"]
-      |> Map.new(&{String.to_atom(&1), &2})
+    with {:module, parser} <-
+           Code.ensure_loaded(Application.get_env(:husky, :json_codec, Poison)),
+         {:ok, body} <- File.read(file),
+         {:ok, json} <- parser.decode(body) do
+      normalize(json["husky"]["hooks"])
+    else
+      {:error, reason} ->
+        """
+        #{yellow()}
+        husky > JSON parsing failed
+          Ensure that either Poison is available or that :json_codec is set and is available
+          Error: #{inspect(reason)}
+        #{reset()}
+        """
+        |> IO.puts()
+
+        %{}
     end
+  end
+
+  defp normalize(map) when is_map(map) do
+    for {key, value} <- map, into: %{} do
+      if is_map(value), do: {normalize(key), normalize(value)}, else: {normalize(key), value}
+    end
+  end
+
+  defp normalize(key) when is_binary(key) do
+    key
+    |> String.replace("-", "_")
+    |> String.to_atom()
   end
 end

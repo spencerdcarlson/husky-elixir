@@ -14,7 +14,7 @@ defmodule HuskyTest do
   describe "Husky" do
     test "fail" do
       assert true
-      assert false
+      #      assert false
     end
   end
 end

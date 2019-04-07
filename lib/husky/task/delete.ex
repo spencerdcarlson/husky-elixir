@@ -20,8 +20,8 @@ defmodule Mix.Tasks.Husky.Delete do
 
   defp delete_scripts(hooks, location) do
     hooks
-    |> Enum.map(&Path.join(location, &1))
-    |> Enum.map(&File.rm/1)
+    |> Stream.map(&Path.join(location, &1))
+    |> Enum.each(&File.rm/1)
 
     File.rmdir(location)
   end
