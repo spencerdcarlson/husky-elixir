@@ -14,16 +14,21 @@ by adding `husky` to your list of dependencies in `mix.exs`:
 ```elixir
 defp deps do
   [
-    {:husky, "~> 0.2"}
+    {:husky, "~> 1.0", only: :dev, runtime: false}
   ]
 end
 ```
 
 ## Usage
-* Run `mix husky.install` to install husky git hook scripts
-* Configure git hook commands in either your `config/config.exs` or a `.husky.json` file
+* On compile, husky will install git hook scripts (`mix husky.install` to install manually)
+* Configure git hook commands in either your `config/dev.exs` or a `.husky.json` file
     * *Note: `config/config.exs` will take precedence over `.husky.json` if there are key conflicts*
 * Remove git hook scripts `mix husky.delete`
+
+##### Skip script install
+```bash
+export HUSKY_SKIP_INSTALL=true
+```
 
 
 ##### Configure Git Hooks Using `config/config.exs`:
@@ -46,7 +51,7 @@ View example file [config.example.exs](./priv/config.example.exs)
   }
 }
 ```
-View example file [.husky.example.json](./priv/config.example.exs) 
+View example file [.husky.example.json](./priv/.husky.example.json) 
 
 With the above setup:
 * `git commit` will execute `mix format`, and only commit if format succeeds

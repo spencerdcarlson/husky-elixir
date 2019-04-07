@@ -3,8 +3,8 @@ defmodule Husky.Script do
   Struct to represent a [git hook script](https://git-scm.com/docs/githooks)
   """
   require Husky.Util
-  alias Husky.Util
   alias Husky.Script
+  alias Husky.Util
 
   defstruct path: nil, content: nil
 
