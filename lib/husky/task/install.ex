@@ -15,7 +15,9 @@ defmodule Mix.Tasks.Husky.Install do
   `mix compile`
   """
   def __after_compile__(_env, _bytecode) do
-    run()
+    unless System.get_env("HUSKY_SKIP_INSTALL") == "true" do
+      run()
+    end
   end
 
   @doc """

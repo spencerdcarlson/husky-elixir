@@ -25,6 +25,11 @@ end
     * *Note: `config/config.exs` will take precedence over `.husky.json` if there are key conflicts*
 * Remove git hook scripts `mix husky.delete`
 
+##### Do not install scripts on compile
+```bash
+export HUSKY_SKIP_INSTALL=true && mix compile
+```
+
 
 ##### Configure Git Hooks Using `config/config.exs`:
 ```elixir

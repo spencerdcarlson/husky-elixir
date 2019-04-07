@@ -1,4 +1,6 @@
 defmodule Mix.Tasks.Husky.Execute do
+  import IO.ANSI
+
   @moduledoc """
   Mix task to invoke a system command set by a husky config file
 
@@ -23,38 +25,63 @@ defmodule Mix.Tasks.Husky.Execute do
   `mix husky.execute pre-commit`
   """
   def run(argv) do
-    result =
+    command =
       argv
       |> parse_args
-      |> process_options()
+      |> fetch_command
 
-    case result do
-      {:ok, cmd, {out, 0}} ->
-        """
-        '$ #{cmd}' was executed successfully:
-        #{out}
-        """
-        |> IO.puts()
-
+    case command do
+      {:error, :no_cmd} ->
         System.halt()
 
-      {:ok, cmd, {out, code}} ->
-        """
-        '$ #{cmd}' was executed, but failed:
-        #{out}
-        """
-        |> IO.puts()
+      {:ok, {hook, cmd}} ->
+        running_message()
 
-        System.halt(code)
+        case execute_cmd(cmd) do
+          {0, out} ->
+            """
+            #{out}
+            #{green()}
+            husky > #{hook} ('#{cmd}')
+            #{reset()}
+            """
+            |> IO.puts()
 
-      {:error, :key_not_found, _key, _} ->
-        System.halt()
-        #        IO.puts(
-        #          "A git hook command for '#{key}' was not found in any config file. If you want to configure a git hook, add:\n\tconfig #{
-        #            inspect(Util.app())
-        #          }, #{inspect(Atom.to_string(key) <> ":")} \"mix format\"\nto your config/config.exs file"
-        #        )
+            System.halt()
+
+          {code, out} ->
+               """
+               #{out}
+               #{red()}
+               husky > #{hook} ('#{cmd}') failed #{no_verify_message(hook)}
+               #{reset()}
+               """
+            |> IO.puts()
+
+            System.halt(code)
+        end
     end
+  end
+
+  defp no_verify_message(hook) do
+    if hook in [
+         "commit-msg",
+         "pre-commit",
+         "pre-rebase",
+         "pre-push"
+       ] do
+      "(add --no-verify to bypass)"
+    else
+      "(cannot be bypassed with --no-verify due to Git specs)"
+    end
+  end
+
+  defp running_message do
+    """
+    🐶
+    .... running husky hook
+    """
+    |> IO.puts()
   end
 
   defp parse_args(argv) do
@@ -69,26 +96,40 @@ defmodule Mix.Tasks.Husky.Execute do
     {parsed, List.to_string(args)}
   end
 
-  defp process_options({_, word}) do
+  defp fetch_command({_, word}) do
     # {[], "pre-commit"} # example args
-    word
-    |> String.replace("-", "_")
-    |> String.to_atom()
-    |> config()
-    |> execute_cmd()
+    IO.inspect(word, label: "parsed options (word)")
+
+    command =
+      word
+      |> String.replace("-", "_")
+      |> String.to_atom()
+      |> config
+
+    case command do
+      {:ok, cmd} -> {:ok, {word, cmd}}
+      {:error, :config} -> {:ok, :no_cmd}
+    end
   end
 
-  defp execute_cmd({:ok, value}) do
-    {cmd, args} =
-      String.split(value, " ")
-      |> List.pop_at(0)
+  defp execute_cmd(cmd) do
+    result =
+    "#{cmd}; echo $?"
+    |> to_char_list()
+    |> :os.cmd()
+    |> to_string()
 
-    # if value is "mix test --trace" => { mix, ["test", "--trace"] }
+    {code, out} = result |> String.split("\n") |> List.pop_at(-2)
+    {String.to_integer(code), Enum.join(out, "\n")}
 
-    {:ok, value, System.cmd(cmd, args, stderr_to_stdout: true)}
+#    {cmd, args} =
+#      String.split(cmd, " ")
+#      |> List.pop_at(0)
+#
+#    # if cmd is "mix test --trace" => { mix, ["test", "--trace"] }
+#
+#    {:ok, cmd, System.cmd(cmd, args, stderr_to_stdout: true)}
   end
-
-  defp execute_cmd({:error, details, key, map}), do: {:error, details, key, map}
 
   defp config(key) do
     # source list order determines value precedence. - See Map.merge/2
@@ -109,11 +150,7 @@ defmodule Mix.Tasks.Husky.Execute do
       |> Stream.map(&elem(&1, 1))
       |> Enum.reduce(%{}, &Map.merge(&2, &1))
 
-    if Map.has_key?(config_map, key) do
-      {:ok, config_map[key]}
-    else
-      {:error, :key_not_found, key, config_map}
-    end
+    if Map.has_key?(config_map, key), do: {:ok, config_map[key]}, else: {:error, :config}
   end
 
   defp parse_json(file) do
@@ -122,7 +159,7 @@ defmodule Mix.Tasks.Husky.Execute do
       # maybe add error handling for badly formatted JSON
       # nil will throw a Protocol.UndefinedError
       json["husky"]["hooks"]
-      |> Map.new(fn {k, v} -> {String.to_atom(k), v} end)
+      |> Map.new(&{String.to_atom(&1), &2})
     end
   end
 end
