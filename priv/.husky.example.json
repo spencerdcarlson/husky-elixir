@@ -1,8 +1,8 @@
 {
   "husky": {
     "hooks": {
-      "pre_commit": "mix credo",
-      "pre_push": "mix format"
+      "pre_commit": "mix format --check-formatted && mix credo",
+      "pre_push": "mix test"
     }
   }
 }

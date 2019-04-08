@@ -1,15 +1,13 @@
 defmodule Husky.Task.InstallTest do
-  use ExUnit.Case
-    alias Mix.Tasks.Husky.Install
-    alias Husky.{Util, TestHelper}
-
+  use ExUnit.Case, async: false
+  alias Mix.Tasks.Husky.Install
+  alias Husky.{TestHelper, Util}
 
   setup do
     # Delete all scripts in sandbox
       TestHelper.rm_files()
     :ok
   end
-
 
   describe "Mix.Tasks.Husky.Install.run" do
     test "should create a file fore each supported git hook" do
@@ -71,9 +69,7 @@ defmodule Husky.Task.InstallTest do
       System.put_env("HUSKY_SKIP_INSTALL", "true")
       Install.__after_compile__(nil, nil)
       refute Util.git_hooks_directory() |> Path.join("pre-commit") |> File.exists?()
+      System.delete_env("HUSKY_SKIP_INSTALL")
     end
   end
-
-
-
 end
