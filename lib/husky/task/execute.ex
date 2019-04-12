@@ -137,17 +137,31 @@ defmodule Mix.Tasks.Husky.Execute do
 
     # get all config files
     # list of tuples { config_exists?, %{configs} }
-    config_map =
-      [
-        {File.exists?(".husky.json"), parse_json(".husky.json")},
-        {not Enum.empty?(Application.get_all_env(:husky)),
-         Map.new(Application.get_all_env(:husky))}
-      ]
+    configs =
+      [json_config(), elixir_config()]
       |> Stream.filter(&elem(&1, 0))
       |> Stream.map(&elem(&1, 1))
       |> Enum.reduce(%{}, &Map.merge(&2, &1))
 
-    if Map.has_key?(config_map, key), do: {:ok, config_map[key]}, else: {:error, :config}
+    if Map.has_key?(configs, key), do: {:ok, configs[key]}, else: {:error, :config}
+  end
+
+  defp elixir_config do
+    envs = Application.get_all_env(:husky)
+
+    if Enum.empty?(envs) do
+      {false, %{}}
+    else
+      {true, Map.new(envs)}
+    end
+  end
+
+  defp json_config do
+    if File.exists?(".husky.json") do
+      {true, parse_json(".husky.json")}
+    else
+      {false, %{}}
+    end
   end
 
   defp parse_json(file) do

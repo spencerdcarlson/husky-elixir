@@ -22,9 +22,9 @@ If the command executed returns a successful exit code (`0`) then the git comman
     * install hook scripts in [sandbox](./sandbox) directory
     ```bash
     rm -rf dev/sandbox/.git/ && \               # clean up
-        mkdir -p dev/sandbox/.git && \          # setup
+        cd dev/sandbox && git init && cd - && \ # create git                          
         MIX_ENV=test mix husky.install && \     # install scripts
-        ./dev/sandbox/.git/hooks/pre-commit     # run a script
+        cd - && git commit                      # run git commands
     ```
 * **Delete** 
     * delete hook scripts from sandbox `MIX_ENV=test mix husky.delete`

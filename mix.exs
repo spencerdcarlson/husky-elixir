@@ -4,7 +4,7 @@ defmodule Husky.MixProject do
   def project do
     [
       app: :husky,
-      version: "1.0.0",
+      version: "1.0.1",
       description:
         "Git hooks made easy. Husky can prevent bad git commit, git push and more 🐶 ❤️ woof! - Elixir equivalent of the husky npm package",
       package: package(),
