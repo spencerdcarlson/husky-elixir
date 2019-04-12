@@ -35,7 +35,7 @@ export HUSKY_SKIP_INSTALL=true
 ```elixir
 use Mix.Config
 config :husky,
-    pre_commit: "mix format --check-formatted",
+    pre_commit: "mix format --check-formatted && mix credo --strict",
     pre_push: "mix test"
 ```
 View example file [config.example.exs](./priv/config.example.exs) 
@@ -45,7 +45,7 @@ View example file [config.example.exs](./priv/config.example.exs)
 {
   "husky": {
     "hooks": {
-      "pre_commit": "mix format --check-formatted",
+      "pre_commit": "mix format --check-formatted && mix credo --strict",
       "pre_push": "mix test"
     }
   }
