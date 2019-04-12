@@ -12,7 +12,7 @@ defmodule Mix.Tasks.Husky.Delete do
   ## Examples
   `mix husky.delete`
   """
-  def run(_args) do
+  def run(_args \\ nil) do
     Mix.shell().info("... running husky delete")
     Mix.Task.run("loadconfig", [Util.config_path()])
     delete_scripts(Util.hooks(), Util.git_hooks_directory())

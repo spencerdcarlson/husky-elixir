@@ -1,6 +1,0 @@
-[
-  inputs: [
-    ".formatter.exs",
-    "*.exs"
-  ]
-]
