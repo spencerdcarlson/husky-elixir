@@ -20,7 +20,7 @@ defmodule Husky.Script do
       :os.type()
       |> Tuple.to_list()
       |> Enum.map(&Atom.to_string/1)
-      |> Enum.map(fn s -> s <> " " end)
+      |> Enum.map(&(&1 <> " "))
     }
     #{if Mix.env() == :test, do: "export MIX_ENV=test && cd ../../"}
     SCRIPT_PATH=\"#{Util.escript_path()}\"
