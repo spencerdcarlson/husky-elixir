@@ -23,13 +23,6 @@ end
 * On compile, husky will install git hook scripts (`mix husky.install` to install manually)
 * Configure git hook commands in either your `config/dev.exs` or a `.husky.json` file
     * *Note: `config/dev.exs` will take precedence over `.husky.json` if there are key conflicts*
-* Remove git hook scripts `mix husky.delete`
-
-##### Skip script install
-```bash
-export HUSKY_SKIP_INSTALL=true
-```
-
 
 ##### Configure Git Hooks Using `config/config.exs`:
 ```elixir
@@ -39,6 +32,9 @@ config :husky,
     pre_push: "mix test"
 ```
 View example file [config.example.exs](./priv/config.example.exs) 
+
+<details><summary>.husky.json</summary>
+<p>
 
 ##### Configure Git Hooks Using `.husky.json`:
 ```JSON
@@ -51,12 +47,24 @@ View example file [config.example.exs](./priv/config.example.exs)
   }
 }
 ```
-View example file [.husky.example.json](./priv/.husky.example.json) 
+View example file [.husky.example.json](./priv/.husky.example.json)
+</p>
+</details>
 
 With the above setup:
 * `git commit` will execute `mix format`, and only commit if format succeeds
 * `git push` will execute `mix test`, and only push if tests succeed
 * `git commit --no-verify` still commit even if `mix format` fails
+
+##### Skip script install
+```bash
+export HUSKY_SKIP_INSTALL=true
+```
+
+##### Delete 
+* Remove git hook scripts `mix husky.delete`
+
+
 
 Documentation can found at [https://hexdocs.pm/husky](https://hexdocs.pm/husky).
 
