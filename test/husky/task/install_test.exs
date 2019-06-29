@@ -10,6 +10,44 @@ defmodule Husky.Task.InstallTest do
   successfully installed husky scripts
   """
 
+  @sample_scripts [
+    "commit-msg.sample",
+    "pre-rebase.sample",
+    "pre-commit.sample",
+    "applypatch-msg.sample",
+    "fsmonitor-watchman.sample",
+    "pre-receive.sample",
+    "prepare-commit-msg.sample",
+    "post-update.sample",
+    "pre-applypatch.sample",
+    "pre-push.sample",
+    "update.sample"
+  ]
+
+  @husky_scripts [
+    "pre-rebase",
+    "pre-applypatch",
+    "pre-auto-gc",
+    "update",
+    "post-receive",
+    "post-commit",
+    "push-to-checkout",
+    "sendemail-validate",
+    "applypatch-msg",
+    "post-update",
+    "prepare-commit-msg",
+    "post-checkout",
+    "post-applypatch",
+    "post-rewrite",
+    "pre-receive",
+    "commit-msg",
+    "pre-push",
+    "post-merge",
+    "pre-commit"
+  ]
+
+  @all_scripts Enum.sort(@sample_scripts ++ @husky_scripts)
+
   setup do
     # Delete all scripts before each test in sandbox
     TestHelper.initialize_empty_git_hook_directory()
@@ -20,29 +58,9 @@ defmodule Husky.Task.InstallTest do
     test "should create a file fore each supported git hook" do
       assert @install_message == capture_io(&Install.run/0)
 
-      installed_hooks = File.ls!(Util.git_hooks_directory())
+      installed_hooks = Util.git_hooks_directory() |> File.ls!() |> Enum.sort()
 
-      assert [
-               "pre-rebase",
-               "pre-applypatch",
-               "pre-auto-gc",
-               "update",
-               "post-receive",
-               "post-commit",
-               "push-to-checkout",
-               "sendemail-validate",
-               "applypatch-msg",
-               "post-update",
-               "prepare-commit-msg",
-               "post-checkout",
-               "post-applypatch",
-               "post-rewrite",
-               "pre-receive",
-               "commit-msg",
-               "pre-push",
-               "post-merge",
-               "pre-commit"
-             ] == installed_hooks
+      assert @all_scripts == installed_hooks
     end
 
     test "should create scripts with the correct content" do
@@ -88,29 +106,9 @@ defmodule Husky.Task.InstallTest do
                  Install.__after_compile__(nil, nil)
                end)
 
-      installed_hooks = File.ls!(Util.git_hooks_directory())
+      installed_hooks = Util.git_hooks_directory() |> File.ls!() |> Enum.sort()
 
-      assert [
-               "pre-rebase",
-               "pre-applypatch",
-               "pre-auto-gc",
-               "update",
-               "post-receive",
-               "post-commit",
-               "push-to-checkout",
-               "sendemail-validate",
-               "applypatch-msg",
-               "post-update",
-               "prepare-commit-msg",
-               "post-checkout",
-               "post-applypatch",
-               "post-rewrite",
-               "pre-receive",
-               "commit-msg",
-               "pre-push",
-               "post-merge",
-               "pre-commit"
-             ] == installed_hooks
+      assert @all_scripts == installed_hooks
     end
 
     test "should respect the HUSKY_SKIP_INSTALL flag and not run Install.run/0 if it is set to true" do

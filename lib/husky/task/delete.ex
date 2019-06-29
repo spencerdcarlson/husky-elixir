@@ -22,7 +22,5 @@ defmodule Mix.Tasks.Husky.Delete do
     hooks
     |> Stream.map(&Path.join(location, &1))
     |> Enum.each(&File.rm/1)
-
-    File.rmdir(location)
   end
 end

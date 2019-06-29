@@ -5,22 +5,15 @@ defmodule Husky.TestHelper do
   If the dev/sandbox/.git/hooks/ directory exists, then delete every file in it.
   If the directory does not exist, then run `git init` in dev/sandbox
   """
-  def initialize_empty_git_hook_directory(dir \\ Util.git_hooks_directory()) do
-    case File.ls(dir) do
-      {:ok, files} ->
-        files
-        |> Enum.map(&Path.expand(&1, dir))
-        |> Enum.each(&File.rm/1)
-
-      {:error, :enoent} ->
-        """
-        mkdir -p #{Util.host_path()} && \
-        cd #{Util.host_path()} && \
-        git init
-        """
-        |> to_charlist()
-        |> :os.cmd()
-    end
+  def initialize_empty_git_hook_directory(dir \\ Util.host_path()) do
+    """
+    rm -rf #{dir} && \
+    mkdir -p #{dir} && \
+    cd #{dir} && \
+    git init
+    """
+    |> to_charlist()
+    |> :os.cmd()
   end
 
   @doc """
