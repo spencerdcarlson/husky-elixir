@@ -17,6 +17,7 @@ defmodule Mix.Tasks.Husky.Execute do
   """
 
   use Mix.Task
+  @defaults %{config: nil}
 
   @doc """
   mix task to execute husky config commands.
@@ -25,6 +26,13 @@ defmodule Mix.Tasks.Husky.Execute do
   `mix husky.execute pre-commit`
   """
   def run(argv) do
+    # Application.get_all_env(:husky) |> IO.inspect(label: "run")
+
+    argv
+    |> parse_args()
+    |> elem(0)
+    |> process_options()
+
     command =
       argv
       |> parse_args()
@@ -43,11 +51,19 @@ defmodule Mix.Tasks.Husky.Execute do
     end
   end
 
+  defp process_options(options) do
+    %{config: config} = Enum.into(options, @defaults)
+
+    if !is_nil(config) do
+      Mix.Task.run("loadconfig", [config])
+    end
+  end
+
   defp handle_result({0, out}, %{hook: hook, cmd: cmd}) do
     """
     #{out}
     #{green()}
-    husky > #{hook} ('#{cmd}')
+    husky > #{print_hook(hook)} ('#{cmd}')
     #{reset()}
     """
     |> IO.puts()
@@ -59,13 +75,21 @@ defmodule Mix.Tasks.Husky.Execute do
     """
     #{out}
     #{red()}
-    husky > #{hook} ('#{cmd}') failed #{no_verify_message(hook)}
+    husky > #{print_hook(hook)} ('#{cmd}') failed #{no_verify_message(hook)}
     #{reset()}
     """
     |> IO.puts()
 
     System.halt(code)
   end
+
+  defp print_hook(hook) when is_list(hook) and length(hook) > 1 do
+    hook
+    |> Enum.join(" ")
+    |> String.trim()
+  end
+
+  defp print_hook(hook), do: hook
 
   defp no_verify_message(hook) do
     if hook in [
@@ -93,17 +117,18 @@ defmodule Mix.Tasks.Husky.Execute do
     {parsed, args, _} =
       argv
       |> OptionParser.parse(
-        switches: [upcase: :boolean],
-        aliases: [u: :upcase]
+        switches: [upcase: :boolean, config: :string],
+        aliases: [u: :upcase, c: :config]
       )
 
-    {parsed, List.to_string(args)}
+    {parsed, args}
   end
 
   defp fetch_command({_, word}) do
-    # {[], "pre-commit"} # example args
+    # {[upcase: true], ["pre-push", "origin", "https://github.com/spencerdcarlson/husky-elixir.git"]} # example args
     command =
       word
+      |> List.first()
       |> normalize()
       |> config()
 
