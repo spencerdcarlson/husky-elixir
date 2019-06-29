@@ -26,8 +26,6 @@ defmodule Mix.Tasks.Husky.Execute do
   `mix husky.execute pre-commit`
   """
   def run(argv) do
-    # Application.get_all_env(:husky) |> IO.inspect(label: "run")
-
     argv
     |> parse_args()
     |> elem(0)
