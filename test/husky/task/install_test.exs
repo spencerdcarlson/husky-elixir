@@ -50,7 +50,7 @@ defmodule Husky.Task.InstallTest do
 
   setup do
     # Delete all scripts before each test in sandbox
-    TestHelper.initialize_empty_git_hook_directory()
+    TestHelper.initialize_local()
     :ok
   end
 

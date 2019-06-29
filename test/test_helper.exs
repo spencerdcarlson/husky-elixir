@@ -2,10 +2,9 @@ defmodule Husky.TestHelper do
   alias Husky.Util
 
   @doc """
-  If the dev/sandbox/.git/hooks/ directory exists, then delete every file in it.
-  If the directory does not exist, then run `git init` in dev/sandbox
+  Remove and create a blank local git repository in dev/sandbox
   """
-  def initialize_empty_git_hook_directory(dir \\ Util.host_path()) do
+  def initialize_local(dir \\ Util.host_path()) do
     """
     rm -rf #{dir} && \
     mkdir -p #{dir} && \

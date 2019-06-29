@@ -90,7 +90,7 @@ defmodule Mix.Tasks.Husky.Execute do
   defp print_hook(hook), do: hook
 
   defp no_verify_message(hook) do
-    if hook in [
+    if List.first(hook) in [
          "commit-msg",
          "pre-commit",
          "pre-rebase",

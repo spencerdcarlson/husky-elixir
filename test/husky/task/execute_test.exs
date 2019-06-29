@@ -5,7 +5,7 @@ defmodule Husky.Task.ExecuteTest do
   alias Husky.{TestHelper, Util}
 
   setup do
-    TestHelper.initialize_empty_git_hook_directory()
+    TestHelper.initialize_local()
     capture_io(&Install.run/0)
     TestHelper.initialize_remote()
     :ok
@@ -51,10 +51,55 @@ defmodule Husky.Task.ExecuteTest do
 
       assert String.match?(
                result,
-               ~r/husky > pre-push origin .*? \('false'\) failed \(cannot be bypassed with --no-verify due to Git specs\)/
+               ~r/husky > pre-push origin .*? \('false'\) failed \(add --no-verify to bypass\)/
              )
 
       assert result =~ "failed"
+    end
+
+    test "given a custom config it override existing configs" do
+      file =
+        """
+        use Mix.Config
+        config :husky,
+          pre_commit: "false"
+        """
+        |> to_tmp_file()
+
+      result =
+        """
+        mix husky.execute pre-commit -c #{file}
+        """
+        |> to_charlist()
+        |> :os.cmd()
+        |> to_string()
+
+      File.rm(file)
+
+      assert String.match?(
+               result,
+               ~r/husky > pre-commit \('false'\) failed \(add --no-verify to bypass\)/
+             )
+
+      result =~ "failed"
+    end
+  end
+
+  defp to_tmp_file(contents) do
+    random = :crypto.strong_rand_bytes(10) |> Base.url_encode64(padding: false)
+    filename = Path.expand("#{random}.exs", "/tmp")
+
+    case File.open(filename, [:write]) do
+      {:ok, file} ->
+        try do
+          IO.binwrite(file, contents)
+          filename
+        after
+          File.close(file)
+        end
+
+      error ->
+        IO.inspect(error)
     end
   end
 end
