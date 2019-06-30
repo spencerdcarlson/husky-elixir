@@ -4,49 +4,14 @@ defmodule Husky.Task.InstallTest do
   require Husky.Util
   alias Mix.Tasks.Husky.Install
   alias Husky.{TestHelper, Util}
+  require TestHelper
 
   @install_message """
   ... running 'husky.install' task
   successfully installed husky scripts
   """
 
-  @sample_scripts [
-    "commit-msg.sample",
-    "pre-rebase.sample",
-    "pre-commit.sample",
-    "applypatch-msg.sample",
-    "fsmonitor-watchman.sample",
-    "pre-receive.sample",
-    "prepare-commit-msg.sample",
-    "post-update.sample",
-    "pre-applypatch.sample",
-    "pre-push.sample",
-    "update.sample"
-  ]
-
-  @husky_scripts [
-    "pre-rebase",
-    "pre-applypatch",
-    "pre-auto-gc",
-    "update",
-    "post-receive",
-    "post-commit",
-    "push-to-checkout",
-    "sendemail-validate",
-    "applypatch-msg",
-    "post-update",
-    "prepare-commit-msg",
-    "post-checkout",
-    "post-applypatch",
-    "post-rewrite",
-    "pre-receive",
-    "commit-msg",
-    "pre-push",
-    "post-merge",
-    "pre-commit"
-  ]
-
-  @all_scripts Enum.sort(@sample_scripts ++ @husky_scripts)
+  @all_scripts Enum.sort(TestHelper.git_default_scripts() ++ Util.hooks())
 
   setup do
     # Delete all scripts before each test in sandbox

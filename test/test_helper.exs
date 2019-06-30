@@ -1,5 +1,20 @@
 defmodule Husky.TestHelper do
+  use Constants
   alias Husky.Util
+
+  define(git_default_scripts, [
+    "commit-msg.sample",
+    "pre-rebase.sample",
+    "pre-commit.sample",
+    "applypatch-msg.sample",
+    "fsmonitor-watchman.sample",
+    "pre-receive.sample",
+    "prepare-commit-msg.sample",
+    "post-update.sample",
+    "pre-applypatch.sample",
+    "pre-push.sample",
+    "update.sample"
+  ])
 
   @doc """
   Remove and create a blank local git repository in dev/sandbox
