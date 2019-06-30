@@ -1,5 +1,6 @@
 defmodule Husky.Task.ExecuteTest do
   import ExUnit.CaptureIO
+  require Logger
   use ExUnit.Case, async: false
   alias Mix.Tasks.Husky.Install
   alias Husky.{TestHelper, Util}
@@ -99,7 +100,7 @@ defmodule Husky.Task.ExecuteTest do
         end
 
       error ->
-        IO.inspect(error)
+        Logger.error(error)
     end
   end
 end

@@ -1,6 +1,7 @@
 defmodule Husky.TestHelper do
   use Constants
   alias Husky.Util
+  require Util
 
   define(git_default_scripts, [
     "commit-msg.sample",
@@ -15,6 +16,8 @@ defmodule Husky.TestHelper do
     "pre-push.sample",
     "update.sample"
   ])
+
+  define(all_scripts, Enum.sort(git_default_scripts() ++ Util.hooks()))
 
   @doc """
   Remove and create a blank local git repository in dev/sandbox

@@ -11,8 +11,6 @@ defmodule Husky.Task.InstallTest do
   successfully installed husky scripts
   """
 
-  @all_scripts Enum.sort(TestHelper.git_default_scripts() ++ Util.hooks())
-
   setup do
     # Delete all scripts before each test in sandbox
     TestHelper.initialize_local()
@@ -25,7 +23,7 @@ defmodule Husky.Task.InstallTest do
 
       installed_hooks = Util.git_hooks_directory() |> File.ls!() |> Enum.sort()
 
-      assert @all_scripts == installed_hooks
+      assert TestHelper.all_scripts() == installed_hooks
     end
 
     test "should create scripts with the correct content" do
@@ -73,7 +71,7 @@ defmodule Husky.Task.InstallTest do
 
       installed_hooks = Util.git_hooks_directory() |> File.ls!() |> Enum.sort()
 
-      assert @all_scripts == installed_hooks
+      assert TestHelper.all_scripts() == installed_hooks
     end
 
     test "should respect the HUSKY_SKIP_INSTALL flag and not run Install.run/0 if it is set to true" do

@@ -17,7 +17,9 @@ defmodule Husky.Task.DeleteTest do
 
   describe "Mix.Tasks.Husky.Delete.run" do
     test "should delete all git hooks that were installed by husky" do
-      assert 30 == Util.git_hooks_directory() |> File.ls!() |> length()
+      assert length(TestHelper.all_scripts()) ==
+               Util.git_hooks_directory() |> File.ls!() |> length()
+
       assert @delete_message == capture_io(&Delete.run/0)
       assert {:ok, TestHelper.git_default_scripts()} == File.ls(Util.git_hooks_directory())
 
