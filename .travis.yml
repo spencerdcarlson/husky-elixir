@@ -5,7 +5,7 @@ otp_release:
   - '21.3.3'
 os:
   - linux
-  #- osx
+  #- osx 
 before_install:
   - git init ${TRAVIS_BUILD_DIR}/dev/sandbox
 install:
