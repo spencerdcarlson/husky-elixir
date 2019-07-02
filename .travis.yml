@@ -6,10 +6,9 @@ otp_release:
 os:
   - linux
   #- osx
-env:
-  - HUSKY_SKIP_INSTALL=true
 before_install:
   - git init ${TRAVIS_BUILD_DIR}/dev/sandbox
+  - git init ${TRAVIS_BUILD_DIR}../../
 install:
   - mix local.rebar --force
   - mix local.hex --force

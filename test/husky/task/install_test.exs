@@ -98,9 +98,13 @@ defmodule Husky.Task.InstallTest do
       |> Path.expand(Util.git_hooks_directory())
       |> File.rm_rf!()
 
-      assert_raise(RuntimeError, "'#{Path.dirname(Util.git_hooks_directory())}' directory does not exist. Try running $ git init", fn ->
-        assert "... running 'husky.install' task\n" == capture_io(&Install.run/0)
-      end)
+      assert_raise(
+        RuntimeError,
+        "'#{Path.dirname(Util.git_hooks_directory())}' directory does not exist. Try running $ git init",
+        fn ->
+          assert "... running 'husky.install' task\n" == capture_io(&Install.run/0)
+        end
+      )
     end
   end
 end
