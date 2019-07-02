@@ -17,14 +17,21 @@ defmodule Husky.Task.DeleteTest do
 
   describe "Mix.Tasks.Husky.Delete.run" do
     test "should delete all git hooks that were installed by husky" do
-      assert length(TestHelper.all_scripts()) ==
-               Util.git_hooks_directory() |> File.ls!() |> length()
+      n_scripts = Util.git_hooks_directory() |> File.ls!() |> length()
+
+      # Linux has 1 less default git script "fsmonitor-watchman.sample" exists on macOS but not on Linux
+      assert length(TestHelper.all_scripts()) == n_scripts ||
+               length(TestHelper.all_scripts()) - 1 == n_scripts
 
       assert @delete_message == capture_io(&Delete.run/0)
-      assert {:ok, TestHelper.git_default_scripts()} == File.ls(Util.git_hooks_directory())
 
-      assert length(TestHelper.git_default_scripts()) ==
-               Util.git_hooks_directory() |> File.ls!() |> length()
+      scripts = Util.git_hooks_directory() |> File.ls!() |> Enum.sort()
+      assert Enum.all?(scripts, fn e -> e in TestHelper.git_default_scripts() end)
+
+      n_scripts = Util.git_hooks_directory() |> File.ls!() |> length()
+
+      assert length(TestHelper.git_default_scripts()) == n_scripts ||
+               length(TestHelper.git_default_scripts()) - 1 == n_scripts
     end
   end
 end

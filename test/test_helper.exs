@@ -3,17 +3,18 @@ defmodule Husky.TestHelper do
   alias Husky.Util
   require Util
 
+  # Linux has 1 less default git script "fsmonitor-watchman.sample" exists on macOS but not on Linux
   define(git_default_scripts, [
-    "commit-msg.sample",
-    "pre-rebase.sample",
-    "pre-commit.sample",
     "applypatch-msg.sample",
+    "commit-msg.sample",
     "fsmonitor-watchman.sample",
-    "pre-receive.sample",
-    "prepare-commit-msg.sample",
     "post-update.sample",
     "pre-applypatch.sample",
+    "pre-commit.sample",
     "pre-push.sample",
+    "pre-rebase.sample",
+    "pre-receive.sample",
+    "prepare-commit-msg.sample",
     "update.sample"
   ])
 

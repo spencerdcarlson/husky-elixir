@@ -19,8 +19,8 @@ defmodule Husky.Task.InstallTest do
 
   describe "Mix.Tasks.Husky.Install.run" do
     test "should create a file fore each supported git hook" do
-      assert Enum.sort(TestHelper.git_default_scripts()) ==
-               Util.git_hooks_directory() |> File.ls!() |> Enum.sort()
+      scripts = Util.git_hooks_directory() |> File.ls!() |> Enum.sort()
+      assert Enum.all?(scripts, fn e -> e in TestHelper.git_default_scripts() end)
 
       assert @install_message == capture_io(&Install.run/0)
 
@@ -66,9 +66,9 @@ defmodule Husky.Task.InstallTest do
   end
 
   describe "Mix.Tasks.Husky.Install.__after_compile__" do
-    test "should create a file fore each supported git hook" do
-      assert Enum.sort(TestHelper.git_default_scripts()) ==
-               Util.git_hooks_directory() |> File.ls!() |> Enum.sort()
+    test "should create a file for each supported git hook" do
+      scripts = Util.git_hooks_directory() |> File.ls!() |> Enum.sort()
+      assert Enum.all?(scripts, fn e -> e in TestHelper.git_default_scripts() end)
 
       assert @install_message ==
                capture_io(fn ->
