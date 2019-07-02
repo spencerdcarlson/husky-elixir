@@ -54,7 +54,7 @@ View example file [.husky.example.json](./priv/.husky.example.json)
 
 With the above setup:
 * `git commit` will execute `mix format` and `mix credo --strict` and only commit if credo succeeds.
-* `git push will execute `mix format`, `mix credo`, and `mix test`, and only push if all three commands succeed.
+* `git push` will execute `mix format`, `mix credo`, and `mix test`, and only push if all three commands succeed.
 * `git commit --no-verify` still commit even if `mix credo --strict` fails
 
 ##### Skip script install
