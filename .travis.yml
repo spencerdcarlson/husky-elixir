@@ -5,7 +5,7 @@ otp_release:
   - '21.3.3'
 os:
   - linux
-  #- osx
+  #- osx # elixir is not available for macOS (might be able to do a workaround installing asdf)
 before_install:
   - git init ${TRAVIS_BUILD_DIR}/dev/sandbox
     # hack to get around MIX_ENV=dev mix compile trying to install scripts into ../../.git/hooks
