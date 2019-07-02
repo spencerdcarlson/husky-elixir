@@ -2,10 +2,10 @@ language: elixir
 elixir: 
   - '1.7'
 otp_release:
-  - '21.3.3'
+  - '20.0'
 os:
-  - linux
   - osx
+  #  - linux
 install:
   - mix local.rebar --force
   - mix local.hex --force
