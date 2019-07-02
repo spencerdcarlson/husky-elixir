@@ -1,0 +1,22 @@
+language: elixir
+elixir: 
+  - '1.7'
+otp_release:
+  - '21.3.3'
+os:
+  - linux
+  #- osx # elixir is not available for macOS (might be able to do a workaround installing asdf)
+before_install:
+  - git init ${TRAVIS_BUILD_DIR}/dev/sandbox
+    # hack to get around MIX_ENV=dev mix compile trying to install scripts into ../../.git/hooks
+    # test/husky/task/execute_test.exs executes `husky.execute` with the `-c` flag, which causes husky to execute MIX_ENV=dev mix compile
+  - git init ${TRAVIS_BUILD_DIR}/../../ 
+install:
+  - mix local.rebar --force
+  - mix local.hex --force
+  - mix deps.get
+  - mix compile  
+script:
+  - mix format --check-formatted
+  - mix credo --strict  
+  - mix test

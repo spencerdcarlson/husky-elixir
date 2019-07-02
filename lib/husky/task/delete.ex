@@ -7,7 +7,7 @@ defmodule Mix.Tasks.Husky.Delete do
   alias Husky.Util
 
   @doc """
-  deletes all the git-hook scripts declared in `Husky.Util.hooks/0` and the .git/hooks directory
+  deletes all the git-hook scripts declared in `Husky.Util.hooks/0`
 
   ## Examples
   `mix husky.delete`
@@ -22,7 +22,5 @@ defmodule Mix.Tasks.Husky.Delete do
     hooks
     |> Stream.map(&Path.join(location, &1))
     |> Enum.each(&File.rm/1)
-
-    File.rmdir(location)
   end
 end

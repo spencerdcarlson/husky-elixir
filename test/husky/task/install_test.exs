@@ -4,6 +4,7 @@ defmodule Husky.Task.InstallTest do
   require Husky.Util
   alias Mix.Tasks.Husky.Install
   alias Husky.{TestHelper, Util}
+  require TestHelper
 
   @install_message """
   ... running 'husky.install' task
@@ -12,37 +13,23 @@ defmodule Husky.Task.InstallTest do
 
   setup do
     # Delete all scripts before each test in sandbox
-    TestHelper.initialize_empty_git_hook_directory()
+    TestHelper.initialize_local()
     :ok
   end
 
   describe "Mix.Tasks.Husky.Install.run" do
     test "should create a file fore each supported git hook" do
+      scripts = Util.git_hooks_directory() |> File.ls!() |> Enum.sort()
+      assert Enum.all?(scripts, fn e -> e in TestHelper.git_default_scripts() end)
+
       assert @install_message == capture_io(&Install.run/0)
 
-      installed_hooks = File.ls!(Util.git_hooks_directory())
+      scripts = Util.git_hooks_directory() |> File.ls!() |> Enum.sort()
+      n_scripts = length(scripts)
+      assert Enum.all?(scripts, fn e -> e in TestHelper.all_scripts() end)
 
-      assert [
-               "pre-rebase",
-               "pre-applypatch",
-               "pre-auto-gc",
-               "update",
-               "post-receive",
-               "post-commit",
-               "push-to-checkout",
-               "sendemail-validate",
-               "applypatch-msg",
-               "post-update",
-               "prepare-commit-msg",
-               "post-checkout",
-               "post-applypatch",
-               "post-rewrite",
-               "pre-receive",
-               "commit-msg",
-               "pre-push",
-               "post-merge",
-               "pre-commit"
-             ] == installed_hooks
+      assert length(TestHelper.all_scripts()) == n_scripts ||
+               length(TestHelper.all_scripts()) - 1 == n_scripts
     end
 
     test "should create scripts with the correct content" do
@@ -82,35 +69,21 @@ defmodule Husky.Task.InstallTest do
   end
 
   describe "Mix.Tasks.Husky.Install.__after_compile__" do
-    test "should create a file fore each supported git hook" do
+    test "should create a file for each supported git hook" do
+      scripts = Util.git_hooks_directory() |> File.ls!() |> Enum.sort()
+      assert Enum.all?(scripts, fn e -> e in TestHelper.git_default_scripts() end)
+
       assert @install_message ==
                capture_io(fn ->
                  Install.__after_compile__(nil, nil)
                end)
 
-      installed_hooks = File.ls!(Util.git_hooks_directory())
+      scripts = Util.git_hooks_directory() |> File.ls!() |> Enum.sort()
+      n_scripts = length(scripts)
+      assert Enum.all?(scripts, fn e -> e in TestHelper.all_scripts() end)
 
-      assert [
-               "pre-rebase",
-               "pre-applypatch",
-               "pre-auto-gc",
-               "update",
-               "post-receive",
-               "post-commit",
-               "push-to-checkout",
-               "sendemail-validate",
-               "applypatch-msg",
-               "post-update",
-               "prepare-commit-msg",
-               "post-checkout",
-               "post-applypatch",
-               "post-rewrite",
-               "pre-receive",
-               "commit-msg",
-               "pre-push",
-               "post-merge",
-               "pre-commit"
-             ] == installed_hooks
+      assert length(TestHelper.all_scripts()) == n_scripts ||
+               length(TestHelper.all_scripts()) - 1 == n_scripts
     end
 
     test "should respect the HUSKY_SKIP_INSTALL flag and not run Install.run/0 if it is set to true" do
@@ -125,9 +98,13 @@ defmodule Husky.Task.InstallTest do
       |> Path.expand(Util.git_hooks_directory())
       |> File.rm_rf!()
 
-      assert_raise(RuntimeError, ".git directory does not exist. Try running $ git init", fn ->
-        assert "... running 'husky.install' task\n" == capture_io(&Install.run/0)
-      end)
+      assert_raise(
+        RuntimeError,
+        "'#{Path.dirname(Util.git_hooks_directory())}' directory does not exist. Try running $ git init",
+        fn ->
+          assert "... running 'husky.install' task\n" == capture_io(&Install.run/0)
+        end
+      )
     end
   end
 end

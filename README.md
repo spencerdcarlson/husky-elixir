@@ -1,4 +1,5 @@
 # Husky
+[![Build Status](https://travis-ci.org/spencerdcarlson/husky-elixir.svg?branch=master)](https://travis-ci.org/spencerdcarlson/husky-elixir)
 > Git hooks made easy
 
 ## Description
@@ -28,8 +29,8 @@ end
 ```elixir
 use Mix.Config
 config :husky,
-    pre_commit: "mix format --check-formatted && mix credo --strict",
-    pre_push: "mix test"
+    pre_commit: "mix format && mix credo --strict",
+    pre_push: "mix format --check-formatted && mix credo --strict && mix test"
 ```
 View example file [config.example.exs](./priv/config.example.exs) 
 
@@ -41,8 +42,8 @@ View example file [config.example.exs](./priv/config.example.exs)
 {
   "husky": {
     "hooks": {
-      "pre_commit": "mix format --check-formatted && mix credo --strict",
-      "pre_push": "mix test"
+      "pre_commit": "mix format && mix credo --strict",
+      "pre_push": "mix format --check-formatted && mix credo --strict && mix test"
     }
   }
 }
@@ -52,9 +53,9 @@ View example file [.husky.example.json](./priv/.husky.example.json)
 </details>
 
 With the above setup:
-* `git commit` will execute `mix format`, and only commit if format succeeds
-* `git push` will execute `mix test`, and only push if tests succeed
-* `git commit --no-verify` still commit even if `mix format` fails
+* `git commit` will execute `mix format` and `mix credo --strict` and only commit if credo succeeds.
+* `git push` will execute `mix format`, `mix credo`, and `mix test`, and only push if all three commands succeed.
+* `git commit --no-verify` still commit even if `mix credo --strict` fails
 
 ##### Skip script install
 ```bash
