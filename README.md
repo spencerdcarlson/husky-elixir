@@ -1,5 +1,4 @@
 # Husky
-=========
 [![Build Status](https://travis-ci.org/spencerdcarlson/husky-elixir.svg?branch=master)](https://travis-ci.org/spencerdcarlson/husky-elixir)
 > Git hooks made easy
 
