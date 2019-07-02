@@ -33,7 +33,6 @@ defmodule Mix.Tasks.Husky.Install do
   end
 
   defp create_scripts(hooks, dir) do
-    IO.puts("!!!!! .git dir shoudl exist here - #{Path.dirname(dir)}")
     unless File.dir?(Path.dirname(dir)),
       do: raise(RuntimeError, message: ".git directory does not exist. Try running $ git init")
 
