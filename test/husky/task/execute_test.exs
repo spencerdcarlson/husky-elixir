@@ -63,6 +63,8 @@ defmodule Husky.Task.ExecuteTest do
         """
         use Mix.Config
         config :husky,
+          host_path: "./dev/sandbox",
+          escript_path: "./priv/husky",
           pre_commit: "false"
         """
         |> to_tmp_file()
