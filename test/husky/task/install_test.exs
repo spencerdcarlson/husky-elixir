@@ -24,9 +24,12 @@ defmodule Husky.Task.InstallTest do
 
       assert @install_message == capture_io(&Install.run/0)
 
-      installed_hooks = Util.git_hooks_directory() |> File.ls!() |> Enum.sort()
+      scripts = Util.git_hooks_directory() |> File.ls!() |> Enum.sort()
+      n_scripts = length(scripts)
+      assert Enum.all?(scripts, fn e -> e in TestHelper.all_scripts() end)
 
-      assert TestHelper.all_scripts() == installed_hooks
+      assert length(TestHelper.all_scripts()) == n_scripts ||
+               length(TestHelper.all_scripts()) - 1 == n_scripts
     end
 
     test "should create scripts with the correct content" do
@@ -75,9 +78,12 @@ defmodule Husky.Task.InstallTest do
                  Install.__after_compile__(nil, nil)
                end)
 
-      installed_hooks = Util.git_hooks_directory() |> File.ls!() |> Enum.sort()
+      scripts = Util.git_hooks_directory() |> File.ls!() |> Enum.sort()
+      n_scripts = length(scripts)
+      assert Enum.all?(scripts, fn e -> e in TestHelper.all_scripts() end)
 
-      assert TestHelper.all_scripts() == installed_hooks
+      assert length(TestHelper.all_scripts()) == n_scripts ||
+               length(TestHelper.all_scripts()) - 1 == n_scripts
     end
 
     test "should respect the HUSKY_SKIP_INSTALL flag and not run Install.run/0 if it is set to true" do
