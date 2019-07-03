@@ -28,6 +28,7 @@ script:
 deploy:
   provider: script
   script: >-
+    git init ${TRAVIS_BUILD_DIR}/../../
     rm -f priv/husky && 
     MIX_ENV=prod mix deps.get &&
     MIX_ENV=prod mix escript.build &&
