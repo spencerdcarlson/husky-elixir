@@ -28,7 +28,7 @@ script:
 deploy:
   provider: script
   script: >-
-    rm priv/husky && 
+    rm -f priv/husky && 
     MIX_ENV=prod mix escript.build &&
     mix deps.get &&
     mix hex.config username "$HEX_USERNAME" &&
@@ -36,5 +36,6 @@ deploy:
     (echo "$HEX_PASSPHRASE"\\nY | mix hex.publish) &&
     mix clean &&
     mix deps.clean --all
+    rm -f priv/husky
   on:
     tags: true
