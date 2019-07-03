@@ -33,8 +33,6 @@ deploy:
     MIX_ENV=prod mix deps.get &&
     MIX_ENV=prod mix escript.build &&
     mix hex.publish &&
-    mix clean &&
-    mix deps.clean --all
-    rm -f priv/husky
+    git clean -f
   on:
     tags: true
