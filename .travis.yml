@@ -18,7 +18,7 @@ before_install: >-
   . ~/.asdf/asdf.sh &&
   asdf plugin-add elixir &&
   asdf plugin-add erlang &&
-  (cd ${TRAVIS_BUILD_DIR} && cat .tool-versions | xargs -n2 -t travis_wait asdf install) &&
+  (cd ${TRAVIS_BUILD_DIR} && cat .tool-versions | travis_wait xargs -n2 -t asdf install) &&
   cat .tool-versions &&
   asdf current
 install:
