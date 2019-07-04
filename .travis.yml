@@ -16,12 +16,12 @@ before_cache:
     - cat ${HOME}/.asdf/.git/logs/HEAD
 before_install: >-
   git init ${TRAVIS_BUILD_DIR}/dev/sandbox &&
-  git clone https://github.com/asdf-vm/asdf.git ${HOME}/.asdf || true &&
-  (cd ${HOME}/.asdf && git rev-parse --abbrev-ref HEAD | grep heads/${ASDF_VERSION} && echo "skip asdf checkout" || git checkout $(git describe --abbrev=0 --tags) ) &&
+  [ "$(ls ${$HOME}/.asdf)" ] || git clone https://github.com/asdf-vm/asdf.git ${HOME}/.asdf &&
+  (cd ${HOME}/.asdf && git rev-parse --abbrev-ref HEAD | grep heads/${ASDF_VERSION} || git checkout $(git describe --abbrev=0 --tags) ) &&
   . ${HOME}/.asdf/asdf.sh &&
   (cd ${HOME}/.asdf && git rev-parse --abbrev-ref HEAD | grep heads/${ASDF_VERSION} || echo "Updating asdf" && asdf update) &&
-  asdf plugin-add elixir || true &&
-  asdf plugin-add erlang || true &&
+  [ -e "${HOME}/.asdf/plugins/elixir" ] || asdf plugin-add elixir &&
+  [ -e "${HOME}/.asdf/plugins/erlang" ] || asdf plugin-add erlang &&
   travis_wait asdf install
 install:
   - mix local.rebar --force
