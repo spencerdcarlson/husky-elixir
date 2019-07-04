@@ -1,21 +1,31 @@
-language: elixir
-elixir: 
-  - '1.7'
-otp_release:
-  - '21.3.3'
+language: bash
 os:
   - linux
-  #- osx # elixir is not available for macOS (might be able to do a workaround installing asdf)
+  - osx
 env:
   global:
-    - HEX_USERNAME=spencerdcarlson
     - MIX_ENV=test
+    - ASDF_VERSION=v0.7.2  
 cache:
   directories:
     - _build
     - deps
-before_install:
-  - git init ${TRAVIS_BUILD_DIR}/dev/sandbox
+    - ${HOME}/.asdf
+before_cache:
+    - rm ${TRAVIS_BUILD_DIR}/_build/test/lib/husky/.mix/compile.elixir
+before_install: >-
+  echo "initialize dev/sandbox repo" &&
+  git init ${TRAVIS_BUILD_DIR}/dev/sandbox &&
+  echo "[asdf] install asdf if it does not already exist" &&
+  [ "$(ls ${HOME}/.asdf)" ] || git clone https://github.com/asdf-vm/asdf.git ${HOME}/.asdf &&
+  echo "[asdf] checkout the correct asdf version (${ASDF_VERSION})" &&
+  (cd ${HOME}/.asdf && git rev-parse --abbrev-ref HEAD | grep heads/${ASDF_VERSION} || git checkout $(git describe --abbrev=0 --tags) ) &&
+  echo "[asdf] source asdf.sh script" &&
+  . ${HOME}/.asdf/asdf.sh &&
+  echo "[asdf] install elixir and erlang plugins" &&
+  [ -e "${HOME}/.asdf/plugins/elixir" ] || asdf plugin-add elixir &&
+  [ -e "${HOME}/.asdf/plugins/erlang" ] || asdf plugin-add erlang &&
+  travis_wait asdf install
 install:
   - mix local.rebar --force
   - mix local.hex --force
