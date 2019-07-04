@@ -15,8 +15,8 @@ cache:
     - _build
     - deps
 before_install: >-
-  git init ${TRAVIS_BUILD_DIR}/dev/sandbox
-  git clone https://github.com/asdf-vm/asdf.git ~/.asdf
+  git init ${TRAVIS_BUILD_DIR}/dev/sandbox &&
+  git clone https://github.com/asdf-vm/asdf.git ~/.asdf &&
   (cd ~/.asdf && git checkout "$(git describe --abbrev=0 --tags)")
 install:
   - mix local.rebar --force
