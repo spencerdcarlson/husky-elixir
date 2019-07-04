@@ -1,8 +1,4 @@
-language: elixir
-elixir: 
-  - '1.7'
-otp_release:
-  - '21.3.3'
+language: bash
 os:
   - linux
   #- osx # elixir is not available for macOS (might be able to do a workaround installing asdf)
@@ -14,6 +10,7 @@ cache:
   directories:
     - _build
     - deps
+    - ~/.asdf  
 before_install: >-
   git init ${TRAVIS_BUILD_DIR}/dev/sandbox &&
   git clone https://github.com/asdf-vm/asdf.git ~/.asdf &&
