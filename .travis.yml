@@ -10,13 +10,12 @@ cache:
   directories:
     - _build
     - deps
-    - ${HOME}/.asdf/installs
-    - ${HOME}/.asdf/shims  
+    - ${HOME}/.asdf
 before_install: >-
   git init ${TRAVIS_BUILD_DIR}/dev/sandbox &&
-  git clone https://github.com/asdf-vm/asdf.git ~/.asdf &&
-  (cd ~/.asdf && git checkout "$(git describe --abbrev=0 --tags)") &&
-  . ~/.asdf/asdf.sh &&
+  git clone https://github.com/asdf-vm/asdf.git ${HOME}/.asdf || true &&
+  (cd ${HOME}/.asdf && git checkout "$(git describe --abbrev=0 --tags)") &&
+  . ${HOME}/.asdf/asdf.sh &&
   asdf plugin-add elixir &&
   asdf plugin-add erlang &&
   travis_wait asdf install
