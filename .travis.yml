@@ -4,7 +4,6 @@ os:
   - osx
 env:
   global:
-    - HEX_USERNAME=spencerdcarlson
     - MIX_ENV=test
 cache:
   directories:
@@ -14,6 +13,7 @@ cache:
 before_cache:
     - rm ${TRAVIS_BUILD_DIR}/_build/test/lib/husky/.mix/compile.elixir
     - cat /home/travis/.asdf/.git/logs/HEAD
+    - git rev-parse --abbrev-ref HEAD  
 before_install: >-
   git init ${TRAVIS_BUILD_DIR}/dev/sandbox &&
   git clone https://github.com/asdf-vm/asdf.git ${HOME}/.asdf || true &&
