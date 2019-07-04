@@ -17,7 +17,7 @@ before_cache:
 before_install: >-
   git init ${TRAVIS_BUILD_DIR}/dev/sandbox &&
   git clone https://github.com/asdf-vm/asdf.git ${HOME}/.asdf || true &&
-  (cd ${HOME}/.asdf && git rev-parse --abbrev-ref HEAD && grep heads/$(git describe --abbrev=0 --tags) || git checkout "$(git describe --abbrev=0 --tags)") &&
+  (cd ${HOME}/.asdf && git rev-parse --abbrev-ref HEAD && grep "heads/$(git describe --abbrev=0 --tags)" || git checkout "$(git describe --abbrev=0 --tags)") &&
   . ${HOME}/.asdf/asdf.sh &&
   asdf update &&
   asdf plugin-add elixir || true &&
