@@ -14,13 +14,13 @@ cache:
 before_cache:
     - rm ${TRAVIS_BUILD_DIR}/_build/test/lib/husky/.mix/compile.elixir
     - cat ${HOME}/.asdf/.git/logs/HEAD
-    - (cd ${HOME}/.asdf && git rev-parse --abbrev-ref HEAD && git describe --abbrev=0 --tags)  
+    - (cd ${HOME}/.asdf && git rev-parse --abbrev-ref HEAD && grep heads/${ASDF_VERSION} && echo "correct version" || echo "wrong version")
 before_install: >-
   git init ${TRAVIS_BUILD_DIR}/dev/sandbox &&
   git clone https://github.com/asdf-vm/asdf.git ${HOME}/.asdf || true &&
   (cd ${HOME}/.asdf && git rev-parse --abbrev-ref HEAD && git checkout "$(git describe --abbrev=0 --tags)") &&
   . ${HOME}/.asdf/asdf.sh &&
-  (cd ${HOME}/.asdf && git rev-parse --abbrev-ref HEAD && grep heads/${ASDF_VERSION} || asdf update) &&
+  asdf update &&
   asdf plugin-add elixir || true &&
   asdf plugin-add erlang || true &&
   travis_wait asdf install
