@@ -16,8 +16,9 @@ before_install: >-
   git clone https://github.com/asdf-vm/asdf.git ${HOME}/.asdf || true &&
   (cd ${HOME}/.asdf && git checkout "$(git describe --abbrev=0 --tags)") &&
   . ${HOME}/.asdf/asdf.sh &&
-  asdf plugin-add elixir &&
-  asdf plugin-add erlang &&
+  asdf update &&
+  asdf plugin-add elixir || true &&
+  asdf plugin-add erlang || true &&
   travis_wait asdf install
 install:
   - mix local.rebar --force
