@@ -1,7 +1,7 @@
 language: bash
 os:
   - linux
-  #- osx # elixir is not available for macOS (might be able to do a workaround installing asdf)
+  - osx # elixir is not available for macOS (might be able to do a workaround installing asdf)
 env:
   global:
     - HEX_USERNAME=spencerdcarlson
