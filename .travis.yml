@@ -13,7 +13,7 @@ cache:
     - ${HOME}/.asdf
 before_cache:
     - rm ${TRAVIS_BUILD_DIR}/_build/test/lib/husky/.mix/compile.elixir
-    - (cd ${HOME}/.asdf && git reset --hard HEAD)
+    - (cd ${HOME}/.asdf && git status)
 before_install: >-
   git init ${TRAVIS_BUILD_DIR}/dev/sandbox &&
   git clone https://github.com/asdf-vm/asdf.git ${HOME}/.asdf || true &&
