@@ -1,7 +1,7 @@
 language: bash
 os:
   - linux
-  - osx # elixir is not available for macOS (might be able to do a workaround installing asdf)
+  - osx
 env:
   global:
     - HEX_USERNAME=spencerdcarlson
@@ -11,6 +11,8 @@ cache:
     - _build
     - deps
     - ${HOME}/.asdf
+before_cache:
+    - rm -f ${TRAVIS_BUILD_DIR}/_build/test/lib/husky/.mix/compile.elixir
 before_install: >-
   git init ${TRAVIS_BUILD_DIR}/dev/sandbox &&
   git clone https://github.com/asdf-vm/asdf.git ${HOME}/.asdf || true &&
