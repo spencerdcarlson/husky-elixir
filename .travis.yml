@@ -14,7 +14,7 @@ cache:
 before_cache:
     - rm ${TRAVIS_BUILD_DIR}/_build/test/lib/husky/.mix/compile.elixir
     - cat ${HOME}/.asdf/.git/logs/HEAD
-    - (cd ${HOME}/.asdf && git rev-parse --abbrev-ref HEAD | grep "heads/${ASDF_VERSION}" && echo "correct version" || echo "wrong version")
+    - (echo "heads/${ASDF_VERSION}" && cd ${HOME}/.asdf && git rev-parse --abbrev-ref HEAD | grep "heads/${ASDF_VERSION}" && echo "correct version" || echo "wrong version")
 before_install: >-
   git init ${TRAVIS_BUILD_DIR}/dev/sandbox &&
   git clone https://github.com/asdf-vm/asdf.git ${HOME}/.asdf || true &&
