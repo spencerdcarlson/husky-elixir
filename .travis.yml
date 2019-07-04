@@ -20,7 +20,7 @@ before_install: >-
   git clone https://github.com/asdf-vm/asdf.git ${HOME}/.asdf || true &&
   (cd ${HOME}/.asdf && git rev-parse --abbrev-ref HEAD && git checkout "$(git describe --abbrev=0 --tags)") &&
   . ${HOME}/.asdf/asdf.sh &&
-  asdf update &&
+  (cd ${HOME}/.asdf && git rev-parse --abbrev-ref HEAD && grep heads/${ASDF_VERSION} || asdf update) &&
   asdf plugin-add elixir || true &&
   asdf plugin-add erlang || true &&
   travis_wait asdf install
