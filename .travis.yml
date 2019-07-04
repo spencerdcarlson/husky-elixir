@@ -20,7 +20,8 @@ before_install: >-
   (cd ~/.asdf && git checkout "$(git describe --abbrev=0 --tags)") &&
   . ~/.asdf/asdf.sh &&
   asdf plugin-add elixir &&
-  asdf plugin-add erlang
+  asdf plugin-add erlang &&
+  asdf install
 install:
   - mix local.rebar --force
   - mix local.hex --force
