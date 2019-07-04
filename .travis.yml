@@ -10,7 +10,7 @@ cache:
   directories:
     - _build
     - deps
-    - ~/.asdf  
+    - ${HOME}/.asdf  
 before_install: >-
   git init ${TRAVIS_BUILD_DIR}/dev/sandbox &&
   git clone https://github.com/asdf-vm/asdf.git ~/.asdf &&
@@ -20,7 +20,7 @@ before_install: >-
   asdf plugin-add erlang &&
   travis_wait asdf install &&
   cat .tool-versions &&
-  asdf curren
+  asdf current
 install:
   - mix local.rebar --force
   - mix local.hex --force
