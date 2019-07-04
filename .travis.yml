@@ -18,7 +18,7 @@ before_install: >-
   . ~/.asdf/asdf.sh &&
   asdf plugin-add elixir &&
   asdf plugin-add erlang &&
-  asdf install &&
+  travis_wait asdf install &&
   asdf current
 install:
   - mix local.rebar --force
