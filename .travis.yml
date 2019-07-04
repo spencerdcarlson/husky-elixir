@@ -12,7 +12,7 @@ cache:
     - deps
     - ${HOME}/.asdf
 before_cache:
-    - rm -f ${TRAVIS_BUILD_DIR}/spencerdcarlson/husky-elixir/_build/test/lib/husky/.mix/compile.elixir
+    - rm ${TRAVIS_BUILD_DIR}/spencerdcarlson/husky-elixir/_build/test/lib/husky/.mix/compile.elixir
 before_install: >-
   git init ${TRAVIS_BUILD_DIR}/dev/sandbox &&
   git clone https://github.com/asdf-vm/asdf.git ${HOME}/.asdf || true &&
