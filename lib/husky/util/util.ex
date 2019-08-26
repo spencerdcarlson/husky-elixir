@@ -79,7 +79,7 @@ defmodule Husky.Util do
   """
   def host_path do
     :husky
-    |> Application.get_env(:host_path, "../../")
+    |> Application.get_env(:host_path, File.cwd!)
     |> Path.expand()
   end
 
