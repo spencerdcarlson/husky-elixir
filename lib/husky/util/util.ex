@@ -78,8 +78,11 @@ defmodule Husky.Util do
   See `config/test.exs` for an override example
   """
   def host_path do
-    :husky
-    |> Application.get_env(:host_path, File.cwd!())
+    'git rev-parse --show-toplevel'
+    |> :os.cmd()
+    |> (&Application.get_env(:husky, :host_path, &1)).()
+    |> to_string()
+    |> String.trim()
     |> Path.expand()
   end
 
