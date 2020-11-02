@@ -27,6 +27,11 @@ defmodule Husky.Script do
     HOOK_NAME=`basename \"$0\"`
     GIT_PARAMS=\"$*\"
 
+    if [ \"${HUSKY_SKIP_HOOKS}\" = \"true\" ] || [ \"${HUSKY_SKIP_HOOKS}\" = \"1\" ]; then
+      printf \"\\033[33mhusky > skipping git hooks because environment variable HUSKY_SKIP_HOOKS is set...\\033[0m\n\"
+      exit 0
+    fi
+
     if [ \"${HUSKY_DEBUG}\" = \"true\" ]; then
       echo \"husky:debug $HOOK_NAME hook started...\"
     fi

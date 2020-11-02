@@ -86,6 +86,24 @@ defmodule Husky.Task.ExecuteTest do
 
       result =~ "failed"
     end
+
+    test "HUSKY_SKIP_HOOKS environment variable allows bypass of hook scripts" do
+      result =
+        """
+        export HUSKY_SKIP_HOOKS=1 && \
+        cd #{Util.host_path()} && \
+        touch file1.txt && \
+        git add file1.txt && \
+        git commit -m 'test'
+        """
+        |> to_charlist()
+        |> :os.cmd()
+        |> to_string()
+
+      refute result =~ "husky > pre-commit ('mix -v')"
+      assert result =~ "husky > skipping git hooks"
+      refute result =~ "failed"
+    end
   end
 
   defp to_tmp_file(contents) do
