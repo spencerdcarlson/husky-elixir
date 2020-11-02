@@ -10,8 +10,8 @@ Husky can prevent bad `git commit`, `git push` and more 🐶 ❤️ _woof!_
 
 
 ## Installation
-The [Husky](https://hex.pm/packages/husky) Hex package can be installed 
-by adding `husky` to your list of dependencies in `mix.exs`: 
+The [Husky](https://hex.pm/packages/husky) Hex package can be installed
+by adding `husky` to your list of dependencies in `mix.exs`:
 ```elixir
 defp deps do
   [
@@ -32,7 +32,7 @@ config :husky,
     pre_commit: "mix format && mix credo --strict",
     pre_push: "mix format --check-formatted && mix credo --strict && mix test"
 ```
-View example file [config.example.exs](./priv/config.example.exs) 
+View example file [config.example.exs](./priv/config.example.exs)
 
 <details><summary>.husky.json</summary>
 <p>
@@ -62,7 +62,12 @@ With the above setup:
 export HUSKY_SKIP_INSTALL=true
 ```
 
-##### Delete 
+##### Temporarily skip hooks
+```bash
+HUSKY_SKIP_HOOKS=true git rebase -i develop
+```
+
+##### Delete
 * Remove git hook scripts `mix husky.delete`
 
 
