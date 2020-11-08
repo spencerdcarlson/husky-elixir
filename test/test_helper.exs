@@ -37,8 +37,8 @@ defmodule Husky.TestHelper do
   @doc """
   Create a fake remote repository in dev/remote and configure
   the dev/sandbox repository to have dev/remote as an origin repository
-  add a test file, an initial commit, and push the commit to remote to 
-  make sure it is working 
+  add a test file, an initial commit, and push the commit to remote to
+  make sure it is working
   """
   def initialize_remote(host_path \\ Util.host_path()) do
     remote_dir = Path.expand("../remote", host_path)
@@ -66,6 +66,7 @@ defmodule Husky.TestHelper do
     git remote add origin #{remote_git_dir} && \
     touch dummy.txt && \
     git add dummy.txt && \
+    git config --local user.email "tester@husky-elixir.tld" && \
     git commit -am 'init commit' --no-verify && \
     git push --set-upstream origin master --no-verify
     """
